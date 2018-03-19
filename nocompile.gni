@@ -11,7 +11,7 @@
 #
 # To use this, create a gyp target with the following form:
 #
-# import("//build/nocompile.gni")
+# import("//build/common/nocompile.gni")
 # nocompile_test("my_module_nc_unittests") {
 #   sources = [
 #     'nc_testset_1.nc',
@@ -64,8 +64,8 @@ declare_args() {
 }
 
 if (enable_nocompile_tests) {
-  import("//build/config/sysroot.gni")
-  import("//build/config/c++/c++.gni")
+  import("//build/common/config/sysroot.gni")
+  import("//build/common/config/c++/c++.gni")
   template("nocompile_test") {
     nocompile_target = target_name + "_run_nocompile"
 

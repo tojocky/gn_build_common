@@ -1,3 +1,4 @@
+
 # Incremental Install
 
 Incremental Install is a way of building & deploying an APK that tries to
@@ -65,17 +66,17 @@ Slower Initial Runs:
 
 All incremental apks have the same classes.dex, which is built from:
 
-    //build/android/incremental_install:bootstrap_java
+    //build/common/android/incremental_install:bootstrap_java
 
 They also have a transformed `AndroidManifest.xml`, which overrides the the
 main application class and any instrumentation classes so that they instead
 point to `BootstrapApplication`. This is built by:
 
-    //build/android/incremental_install/generate_android_manifest.py
+    //build/common/android/incremental_install/generate_android_manifest.py
 
 Wrapper scripts and install logic is contained in:
 
-    //build/android/incremental_install/create_install_script.py
-    //build/android/incremental_install/installer.py
+    //build/common/android/incremental_install/create_install_script.py
+    //build/common/android/incremental_install/installer.py
 
 Finally, GN logic for incremental apks is sprinkled throughout.

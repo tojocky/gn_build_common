@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
-import("//build/config/android/rules.gni")
+import("//build/common/config/android/config.gni")
+import("//build/common/config/android/rules.gni")
 
 if (enable_java_templates) {
   import("//third_party/ijar/ijar.gni")
@@ -14,12 +14,12 @@ if (enable_java_templates) {
   # functionally empty lint task. This prevents racy creation of the
   # cache while linting java targets in android_lint.
   android_lint("prepare_android_lint_cache") {
-    android_manifest = "//build/android/AndroidManifest.xml"
+    android_manifest = "//build/common/android/AndroidManifest.xml"
     create_cache = true
   }
 
   action("find_sun_tools_jar") {
-    script = "//build/android/gyp/find_sun_tools_jar.py"
+    script = "//build/common/android/gyp/find_sun_tools_jar.py"
     depfile = "$target_gen_dir/$target_name.d"
     outputs = [
       sun_tools_jar_path,
@@ -82,7 +82,7 @@ action("cpplib_stripped") {
     ":cpplib_unstripped",
   ]
 
-  script = "//build/gn_run_binary.py"
+  script = "//build/common/gn_run_binary.py"
   inputs = [
     _strip_bin,
   ]

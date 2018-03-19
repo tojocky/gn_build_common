@@ -2,22 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build_overrides/build.gni")
-import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
-import("//build/config/clang/clang.gni")
-import("//build/config/sanitizers/sanitizers.gni")
-import("//build/toolchain/toolchain.gni")
+import("//build/common_overrides/build.gni")
+import("//build/common/config/chromecast_build.gni")
+import("//build/common/config/clang/clang.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
+import("//build/common/toolchain/toolchain.gni")
 
 if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
+  import("//build/common/config/ios/ios_sdk.gni")
 }
 
 # Contains the dependencies needed for sanitizers to link into
 # executables and shared_libraries. Unconditionally depend upon
-# "//build/config:exe_and_shlib_deps" to pull in this target.
+# "//build/common/config:exe_and_shlib_deps" to pull in this target.
 group("deps") {
-  visibility = [ "//build/config:exe_and_shlib_deps" ]
+  visibility = [ "//build/common/config:exe_and_shlib_deps" ]
   if (using_sanitizer) {
     public_configs = [
       ":sanitizer_options_link_helper",
@@ -87,7 +86,7 @@ if ((is_mac || is_win || (is_ios && !use_xcode_clang)) && using_sanitizer) {
     # On iOS, the runtime library need to be code signed (adhoc signature)
     # starting with Xcode 8, so use an action instead of a copy on iOS.
     action("copy_asan_runtime") {
-      script = "//build/config/ios/codesign.py"
+      script = "//build/common/config/ios/codesign.py"
       sources = [
         _clang_rt_dso_full_path,
       ]
@@ -132,31 +131,31 @@ static_library("options_sources") {
     "//:gn_visibility",
   ]
   sources = [
-    "//build/sanitizers/sanitizer_options.cc",
+    "//build/common/sanitizers/sanitizer_options.cc",
   ]
 
   # Don't compile this target with any sanitizer code. It can be called from
   # the sanitizer runtimes, so instrumenting these functions could cause
   # recursive calls into the runtime if there is an error.
-  configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
+  configs -= [ "//build/common/config/sanitizers:default_sanitizer_flags" ]
 
   if (is_asan) {
     if (!defined(asan_suppressions_file)) {
-      asan_suppressions_file = "//build/sanitizers/asan_suppressions.cc"
+      asan_suppressions_file = "//build/common/sanitizers/asan_suppressions.cc"
     }
     sources += [ asan_suppressions_file ]
   }
 
   if (is_lsan) {
     if (!defined(lsan_suppressions_file)) {
-      lsan_suppressions_file = "//build/sanitizers/lsan_suppressions.cc"
+      lsan_suppressions_file = "//build/common/sanitizers/lsan_suppressions.cc"
     }
     sources += [ lsan_suppressions_file ]
   }
 
   if (is_tsan) {
     if (!defined(tsan_suppressions_file)) {
-      tsan_suppressions_file = "//build/sanitizers/tsan_suppressions.cc"
+      tsan_suppressions_file = "//build/common/sanitizers/tsan_suppressions.cc"
     }
     sources += [ tsan_suppressions_file ]
   }
@@ -268,7 +267,7 @@ config("common_sanitizer_flags") {
       ]
     }
 
-    # Frame pointers are controlled in //build/config/compiler:default_stack_frames
+    # Frame pointers are controlled in //build/common/config/compiler:default_stack_frames
   }
 }
 
@@ -592,7 +591,7 @@ config("not_fuzzed") {
     # optimize_for_fuzzing (-O1). When given multiple optimization flags, clang
     # obeys the last one, so as long as this flag comes after -O1, it should work.
     # Since this config will always be depended on after
-    # "//build/config/compiler:default_optimization" (which adds -O1 when
+    # "//build/common/config/compiler:default_optimization" (which adds -O1 when
     # optimize_for_fuzzing is true), -O2 should always be the second flag. Even
     # though this sounds fragile, it isn't a big deal if it breaks, since proto
     # fuzzers will still work, they will just be slightly slower.

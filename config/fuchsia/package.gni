@@ -32,7 +32,7 @@ template("package") {
                              "testonly",
                            ])
 
-    script = "//build/config/fuchsia/build_manifest.py"
+    script = "//build/common/config/fuchsia/build_manifest.py"
 
     inputs = [
       _runtime_deps_file,
@@ -61,7 +61,7 @@ template("package") {
     forward_variables_from(invoker, [ "testonly" ])
 
     far_tool_path = "//third_party/fuchsia-sdk/tools/far"
-    script = "//build/gn_run_binary.py"
+    script = "//build/common/gn_run_binary.py"
 
     deps = [
       ":$_write_manifest_target",

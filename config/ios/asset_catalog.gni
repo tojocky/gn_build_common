@@ -85,7 +85,7 @@ template("asset_catalog") {
                                "testonly",
                              ])
 
-      script = "//build/config/ios/hardlink.py"
+      script = "//build/common/config/ios/hardlink.py"
 
       visibility = [ ":$_data_target_name" ]
       sources = _sources

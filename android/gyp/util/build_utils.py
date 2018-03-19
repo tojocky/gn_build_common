@@ -17,7 +17,7 @@ import sys
 import tempfile
 import zipfile
 
-# Some clients do not add //build/android/gyp to PYTHONPATH.
+# Some clients do not add //build/common/android/gyp to PYTHONPATH.
 import md5_check  # pylint: disable=relative-import
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))

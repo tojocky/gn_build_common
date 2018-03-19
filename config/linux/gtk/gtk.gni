@@ -4,7 +4,7 @@
 
 # Include this file if you need to know at build time whether we're compiling
 # against GTK 2 or 3. But in most cases you can just depend on
-# //build/config/linux/gtk and it will switch for you.
+# //build/common/config/linux/gtk and it will switch for you.
 
 declare_args() {
   # Whether to compile against GTKv3 instead of GTKv2.

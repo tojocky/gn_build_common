@@ -88,7 +88,7 @@ if (current_os == "") {
 #   Nobody else in the build needs to see the flag.
 #
 # - Defines based on build variables should be implemented via the generated
-#   build flag header system. See //build/buildflag_header.gni. You can put
+#   build flag header system. See //build/common/buildflag_header.gni. You can put
 #   the buildflag_header target in the same file as the build flag itself. You
 #   should almost never set "defines" directly.
 #
@@ -103,7 +103,7 @@ if (current_os == "") {
 #   the above pattern for isolating the build logic in a forwarding group
 #   doesn't work, you can put the argument in a .gni file. This should be put
 #   in the lowest level of the build that knows about this feature (which should
-#   almost always be outside of the //build directory!).
+#   almost always be outside of the //build/common directory!).
 #
 # Other flag advice:
 #
@@ -196,24 +196,24 @@ if (host_toolchain == "") {
       # build, and there is no way to indicate that you want to override
       # it for both the target build *and* the host build. Do we need to
       # support this?
-      host_toolchain = "//build/toolchain/linux:clang_$host_cpu"
+      host_toolchain = "//build/common/toolchain/linux:clang_$host_cpu"
     } else if (is_clang) {
-      host_toolchain = "//build/toolchain/linux:clang_$host_cpu"
+      host_toolchain = "//build/common/toolchain/linux:clang_$host_cpu"
     } else {
-      host_toolchain = "//build/toolchain/linux:$host_cpu"
+      host_toolchain = "//build/common/toolchain/linux:$host_cpu"
     }
   } else if (host_os == "mac") {
-    host_toolchain = "//build/toolchain/mac:clang_$host_cpu"
+    host_toolchain = "//build/common/toolchain/mac:clang_$host_cpu"
   } else if (host_os == "win") {
     # On Windows always use the target CPU for host builds. On the
     # configurations we support this will always work and it saves build steps.
     if (is_clang) {
-      host_toolchain = "//build/toolchain/win:win_clang_$target_cpu"
+      host_toolchain = "//build/common/toolchain/win:win_clang_$target_cpu"
     } else {
-      host_toolchain = "//build/toolchain/win:$target_cpu"
+      host_toolchain = "//build/common/toolchain/win:$target_cpu"
     }
   } else if (host_os == "aix") {
-    host_toolchain = "//build/toolchain/aix:$host_cpu"
+    host_toolchain = "//build/common/toolchain/aix:$host_cpu"
   } else {
     assert(false, "Unsupported host_os: $host_os")
   }
@@ -224,18 +224,18 @@ _default_toolchain = ""
 if (target_os == "android") {
   assert(host_os == "linux" || host_os == "mac",
          "Android builds are only supported on Linux and Mac hosts.")
-  _default_toolchain = "//build/toolchain/android:android_clang_$target_cpu"
+  _default_toolchain = "//build/common/toolchain/android:android_clang_$target_cpu"
 } else if (target_os == "chromeos" || target_os == "linux") {
   # See comments in build/toolchain/cros/BUILD.gn about board compiles.
   if (is_clang) {
-    _default_toolchain = "//build/toolchain/linux:clang_$target_cpu"
+    _default_toolchain = "//build/common/toolchain/linux:clang_$target_cpu"
   } else {
-    _default_toolchain = "//build/toolchain/linux:$target_cpu"
+    _default_toolchain = "//build/common/toolchain/linux:$target_cpu"
   }
 } else if (target_os == "fuchsia") {
-  _default_toolchain = "//build/toolchain/fuchsia:$target_cpu"
+  _default_toolchain = "//build/common/toolchain/fuchsia:$target_cpu"
 } else if (target_os == "ios") {
-  _default_toolchain = "//build/toolchain/mac:ios_clang_$target_cpu"
+  _default_toolchain = "//build/common/toolchain/mac:ios_clang_$target_cpu"
 } else if (target_os == "mac") {
   assert(host_os == "mac", "Mac cross-compiles are unsupported.")
   _default_toolchain = host_toolchain
@@ -246,15 +246,15 @@ if (target_os == "android") {
   assert(host_os != "mac" || target_cpu == "x64",
          "Mac hosts can only build 64-bit chrome/win, https://crbug.com/794838")
   if (is_clang) {
-    _default_toolchain = "//build/toolchain/win:win_clang_$target_cpu"
+    _default_toolchain = "//build/common/toolchain/win:win_clang_$target_cpu"
   } else {
-    _default_toolchain = "//build/toolchain/win:$target_cpu"
+    _default_toolchain = "//build/common/toolchain/win:$target_cpu"
   }
 } else if (target_os == "aix") {
-  _default_toolchain = "//build/toolchain/aix:$target_cpu"
+  _default_toolchain = "//build/common/toolchain/aix:$target_cpu"
 } else if (target_os == "winrt_81" || target_os == "winrt_81_phone" ||
            target_os == "winrt_10") {
-  _default_toolchain = "//build/toolchain/win:winrt_$target_cpu"
+  _default_toolchain = "//build/common/toolchain/win:winrt_$target_cpu"
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }
@@ -514,71 +514,71 @@ set_sources_assignment_filter(sources_assignment_filter)
 
 # Holds all configs used for running the compiler.
 default_compiler_configs = [
-  "//build/config:feature_flags",
-  "//build/config/compiler:afdo",
-  "//build/config/compiler:afdo_optimize_size",
-  "//build/config/compiler:compiler",
-  "//build/config/compiler:clang_stackrealign",
-  "//build/config/compiler:compiler_arm_fpu",
-  "//build/config/compiler:compiler_arm_thumb",
-  "//build/config/compiler:chromium_code",
-  "//build/config/compiler:default_include_dirs",
-  "//build/config/compiler:default_optimization",
-  "//build/config/compiler:default_stack_frames",
-  "//build/config/compiler:default_symbols",
+  "//build/common/config:feature_flags",
+  "//build/common/config/compiler:afdo",
+  "//build/common/config/compiler:afdo_optimize_size",
+  "//build/common/config/compiler:compiler",
+  "//build/common/config/compiler:clang_stackrealign",
+  "//build/common/config/compiler:compiler_arm_fpu",
+  "//build/common/config/compiler:compiler_arm_thumb",
+  "//build/common/config/compiler:chromium_code",
+  "//build/common/config/compiler:default_include_dirs",
+  "//build/common/config/compiler:default_optimization",
+  "//build/common/config/compiler:default_stack_frames",
+  "//build/common/config/compiler:default_symbols",
 
   # TODO(crbug.com/795158): Remove once libwidevinecdmadapter.so is fixed.
-  "//build/config/compiler:default_fatal_linker_warnings",
-  "//build/config/compiler:no_exceptions",
-  "//build/config/compiler:no_rtti",
-  "//build/config/compiler:runtime_library",
-  "//build/config/coverage:default_coverage",
-  "//build/config/sanitizers:default_sanitizer_flags",
+  "//build/common/config/compiler:default_fatal_linker_warnings",
+  "//build/common/config/compiler:no_exceptions",
+  "//build/common/config/compiler:no_rtti",
+  "//build/common/config/compiler:runtime_library",
+  "//build/common/config/coverage:default_coverage",
+  "//build/common/config/sanitizers:default_sanitizer_flags",
 ]
 if (is_win) {
   default_compiler_configs += [
-    "//build/config/win:default_crt",
-    "//build/config/win:lean_and_mean",
-    "//build/config/win:nominmax",
-    "//build/config/win:unicode",
-    "//build/config/win:winver",
-    "//build/config/win:vs_code_analysis",
+    "//build/common/config/win:default_crt",
+    "//build/common/config/win:lean_and_mean",
+    "//build/common/config/win:nominmax",
+    "//build/common/config/win:unicode",
+    "//build/common/config/win:winver",
+    "//build/common/config/win:vs_code_analysis",
   ]
 }
 if (current_os == "winrt_81" || current_os == "winrt_81_phone" ||
     current_os == "winrt_10") {
-  default_compiler_configs += [ "//build/config/win:target_winrt" ]
+  default_compiler_configs += [ "//build/common/config/win:target_winrt" ]
 }
 
 if (is_posix) {
   if (current_os != "aix") {
     default_compiler_configs +=
-        [ "//build/config/gcc:symbol_visibility_hidden" ]
+        [ "//build/common/config/gcc:symbol_visibility_hidden" ]
   }
 }
 
 if (is_android) {
   default_compiler_configs +=
-      [ "//build/config/android:default_cygprofile_instrumentation" ]
+      [ "//build/common/config/android:default_cygprofile_instrumentation" ]
 }
 
 if (is_win) {
   default_compiler_configs +=
-      [ "//build/config/win:default_cygprofile_instrumentation" ]
+      [ "//build/common/config/win:default_cygprofile_instrumentation" ]
 }
 
 if (is_clang && !is_nacl) {
   default_compiler_configs += [
-    "//build/config/clang:find_bad_constructs",
-    "//build/config/clang:extra_warnings",
+    "//build/common/config/clang:find_bad_constructs",
+    "//build/common/config/clang:extra_warnings",
   ]
 }
 
 # Debug/release-related defines.
 if (is_debug) {
-  default_compiler_configs += [ "//build/config:debug" ]
+  default_compiler_configs += [ "//build/common/config:debug" ]
 } else {
-  default_compiler_configs += [ "//build/config:release" ]
+  default_compiler_configs += [ "//build/common/config:release" ]
 }
 
 # Static libraries and source sets use only the compiler ones.
@@ -593,24 +593,24 @@ set_defaults("source_set") {
 # loadable modules, executables) to avoid duplication below.
 if (is_win) {
   # Many targets remove these configs, so they are not contained within
-  # //build/config:executable_config for easy removal.
+  # //build/common/config:executable_config for easy removal.
   _linker_configs = [
-    "//build/config/win:default_incremental_linking",
+    "//build/common/config/win:default_incremental_linking",
 
     # Default to console-mode apps. Most of our targets are tests and such
     # that shouldn't use the windows subsystem.
-    "//build/config/win:console",
+    "//build/common/config/win:console",
   ]
 } else if (is_mac) {
-  _linker_configs = [ "//build/config/mac:strip_all" ]
+  _linker_configs = [ "//build/common/config/mac:strip_all" ]
 } else {
   _linker_configs = []
 }
 
 # Executable defaults.
 default_executable_configs = default_compiler_configs + [
-                               "//build/config:default_libs",
-                               "//build/config:executable_config",
+                               "//build/common/config:default_libs",
+                               "//build/common/config:executable_config",
                              ] + _linker_configs
 set_defaults("executable") {
   configs = default_executable_configs
@@ -619,14 +619,14 @@ set_defaults("executable") {
 # Shared library and loadable module defaults (also for components in component
 # mode).
 default_shared_library_configs = default_compiler_configs + [
-                                   "//build/config:default_libs",
-                                   "//build/config:shared_library_config",
+                                   "//build/common/config:default_libs",
+                                   "//build/common/config:shared_library_config",
                                  ] + _linker_configs
 if (is_android) {
   # Strip native JNI exports from shared libraries by default. Binaries that
   # want this can remove this config.
   default_shared_library_configs +=
-      [ "//build/config/android:hide_all_but_jni_onload" ]
+      [ "//build/common/config/android:hide_all_but_jni_onload" ]
 }
 set_defaults("shared_library") {
   configs = default_shared_library_configs
@@ -636,7 +636,7 @@ set_defaults("loadable_module") {
 
   # loadable_modules are generally used by other libs, not just via JNI.
   if (is_android) {
-    configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    configs -= [ "//build/common/config/android:hide_all_but_jni_onload" ]
   }
 }
 
@@ -700,7 +700,7 @@ template("component") {
     if (!defined(deps)) {
       deps = []
     }
-    deps += [ "//build/config:exe_and_shlib_deps" ]
+    deps += [ "//build/common/config:exe_and_shlib_deps" ]
   }
 }
 
@@ -709,7 +709,7 @@ set_defaults("component") {
   if (is_component_build) {
     configs = default_shared_library_configs
     if (is_android) {
-      configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+      configs -= [ "//build/common/config/android:hide_all_but_jni_onload" ]
     }
   } else {
     configs = default_compiler_configs

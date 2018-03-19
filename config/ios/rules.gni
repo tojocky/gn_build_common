@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/ios_sdk.gni")
-import("//build/config/mac/base_rules.gni")
-import("//build/config/mac/symbols.gni")
-import("//build/toolchain/toolchain.gni")
+import("//build/common/config/ios/ios_sdk.gni")
+import("//build/common/config/mac/base_rules.gni")
+import("//build/common/config/mac/symbols.gni")
+import("//build/common/toolchain/toolchain.gni")
 
 # Invokes lipo on multiple arch-specific binaries to create a fat binary.
 #
@@ -56,10 +56,10 @@ template("lipo_binary") {
                              "output_name",
                            ])
 
-    script = "//build/toolchain/mac/linker_driver.py"
+    script = "//build/common/toolchain/mac/linker_driver.py"
 
     # http://crbug.com/762840. Fix for bots running out of memory.
-    pool = "//build/toolchain:link_pool($default_toolchain)"
+    pool = "//build/common/toolchain:link_pool($default_toolchain)"
 
     outputs = [
       "$target_out_dir/$_output_name",
@@ -162,7 +162,7 @@ template("lipo_binary") {
 #   entitlements_path:
 #       (optional) path to the template to use to generate the application
 #       entitlements by performing variable substitutions, defaults to
-#       //build/config/ios/entitlements.plist.
+#       //build/common/config/ios/entitlements.plist.
 #
 #   entitlements_target:
 #       (optional) label of the target generating the application
@@ -253,7 +253,7 @@ template("create_signed_bundle") {
 
   if (_enable_entitlements) {
     if (!defined(invoker.entitlements_target)) {
-      _entitlements_path = "//build/config/ios/entitlements.plist"
+      _entitlements_path = "//build/common/config/ios/entitlements.plist"
       if (defined(invoker.entitlements_path)) {
         _entitlements_path = invoker.entitlements_path
       }
@@ -313,7 +313,7 @@ template("create_signed_bundle") {
       deps = []
     }
 
-    code_signing_script = "//build/config/ios/codesign.py"
+    code_signing_script = "//build/common/config/ios/codesign.py"
     code_signing_sources = [ _bundle_binary_path ]
     if (_enable_entitlements) {
       if (defined(invoker.entitlements_target)) {
@@ -377,7 +377,7 @@ template("create_signed_bundle") {
         invoker.partial_info_plist,
       ]
 
-      _plist_compiler_path = "//build/config/mac/plist_util.py"
+      _plist_compiler_path = "//build/common/config/mac/plist_util.py"
 
       code_signing_sources += _partial_info_plists
       code_signing_sources += [ _plist_compiler_path ]
@@ -441,7 +441,7 @@ template("ios_info_plist") {
       "IOS_SUPPORTED_PLATFORM=$ios_sdk_platform",
     ]
     plist_templates = [
-      "//build/config/ios/BuildInfo.plist",
+      "//build/common/config/ios/BuildInfo.plist",
       _info_plist,
     ]
     if (defined(invoker.info_plist_target)) {
@@ -489,7 +489,7 @@ template("ios_info_plist") {
 #   entitlements_path:
 #       (optional) path to the template to use to generate the application
 #       entitlements by performing variable substitutions, defaults to
-#       //build/config/ios/entitlements.plist.
+#       //build/common/config/ios/entitlements.plist.
 #
 #   entitlements_target:
 #       (optional) label of the target generating the application
@@ -723,7 +723,7 @@ template("ios_app_bundle") {
 
     if (current_toolchain == default_toolchain) {
       if (!defined(invoker.entitlements_target)) {
-        _entitlements_path = "//build/config/ios/entitlements.plist"
+        _entitlements_path = "//build/common/config/ios/entitlements.plist"
         if (defined(invoker.entitlements_path)) {
           _entitlements_path = invoker.entitlements_path
         }
@@ -741,7 +741,7 @@ template("ios_app_bundle") {
         _gen_info_plist_outputs = get_target_outputs(":$_generate_info_plist")
         _info_plist_path = _gen_info_plist_outputs[0]
 
-        script = "//build/config/ios/codesign.py"
+        script = "//build/common/config/ios/codesign.py"
         deps = [
           ":$_generate_info_plist",
         ]
@@ -792,7 +792,7 @@ template("ios_app_bundle") {
       _create_pkg_info = target_name + "_pkg_info"
       action(_create_pkg_info) {
         forward_variables_from(invoker, [ "testonly" ])
-        script = "//build/config/mac/write_pkg_info.py"
+        script = "//build/common/config/mac/write_pkg_info.py"
         sources = get_target_outputs(":$_generate_info_plist")
         outputs = [
           # Cannot name the output PkgInfo as the name will not be unique if
@@ -878,7 +878,7 @@ template("ios_app_bundle") {
       action(_target_name) {
         forward_variables_from(invoker, [ "testonly" ])
 
-        script = "//build/config/ios/hardlink.py"
+        script = "//build/common/config/ios/hardlink.py"
         public_deps = []
         foreach(_variant, _variants) {
           public_deps += [ ":${_variant.target_name}" ]
@@ -1353,7 +1353,7 @@ template("ios_framework_bundle") {
                                  "public_deps",
                                  "testonly",
                                ])
-        script = "//build/config/ios/write_framework_hmap.py"
+        script = "//build/common/config/ios/write_framework_hmap.py"
         outputs = [
           _header_map_filename,
         ]
@@ -1381,7 +1381,7 @@ template("ios_framework_bundle") {
       _create_module_map_target = _target_name + "_module_map"
       action(_create_module_map_target) {
         visibility = [ ":$_framework_headers_target" ]
-        script = "//build/config/ios/write_framework_modulemap.py"
+        script = "//build/common/config/ios/write_framework_modulemap.py"
         outputs = [
           "$_framework_root/Modules/module.modulemap",
         ]
@@ -1603,7 +1603,7 @@ template("ios_xctest_bundle") {
     deps = [
       ":$_arch_loadable_module_source",
     ]
-    configs += [ "//build/config/ios:xctest_config" ]
+    configs += [ "//build/common/config/ios:xctest_config" ]
 
     output_dir = "$target_out_dir/$current_cpu"
     output_name = _output_name
@@ -1631,7 +1631,7 @@ template("ios_xctest_bundle") {
       testonly = true
       visibility = [ ":$_info_plist_bundle" ]
 
-      info_plist = "//build/config/ios/Module-Info.plist"
+      info_plist = "//build/common/config/ios/Module-Info.plist"
       executable_name = _output_name
 
       if (ios_automatically_manage_certs) {
@@ -1751,10 +1751,10 @@ template("ios_xctest_test") {
   _xctest_shell_source_target = _xctest_target + "shell_source"
   source_set(_xctest_shell_source_target) {
     sources = [
-      "//build/config/ios/xctest_shell.mm",
+      "//build/common/config/ios/xctest_shell.mm",
     ]
 
-    configs += [ "//build/config/ios:xctest_config" ]
+    configs += [ "//build/common/config/ios:xctest_config" ]
   }
 
   ios_xctest_bundle(_xctest_target) {
@@ -1773,10 +1773,10 @@ template("ios_xctest_test") {
 
     testonly = true
     output_name = _host_output
-    configs += [ "//build/config/ios:xctest_config" ]
+    configs += [ "//build/common/config/ios:xctest_config" ]
 
     if (!defined(invoker.info_plist) && !defined(invoker.info_plist_target)) {
-      info_plist = "//build/config/ios/Host-Info.plist"
+      info_plist = "//build/common/config/ios/Host-Info.plist"
       if (ios_automatically_manage_certs) {
         # Use the same bundle identifier for EarlGrey tests as for unit tests
         # when managing certificates as the number of free certs is limited.
@@ -1860,7 +1860,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
   action(_info_plist_merge_plist) {
     testonly = true
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/common/config/mac/plist_util.py"
 
     sources = [
       "$_xctrunner_path/Info.plist",

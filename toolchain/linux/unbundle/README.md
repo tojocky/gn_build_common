@@ -24,8 +24,8 @@ for some examples. This is not an exhaustive list.
 Add the following to GN args:
 
 ```
-custom_toolchain="//build/toolchain/linux/unbundle:default"
-host_toolchain="//build/toolchain/linux/unbundle:default"
+custom_toolchain="//build/common/toolchain/linux/unbundle:default"
+host_toolchain="//build/common/toolchain/linux/unbundle:default"
 ```
 
 See [more docs on GN](https://chromium.googlesource.com/chromium/src/+/master/tools/gn/docs/quick_start.md).
@@ -33,8 +33,8 @@ See [more docs on GN](https://chromium.googlesource.com/chromium/src/+/master/to
 To cross-compile (not fully tested), add the following:
 
 ```
-host_toolchain="//build/toolchain/linux/unbundle:host"
-v8_snapshot_toolchain="//build/toolchain/linux/unbundle:host"
+host_toolchain="//build/common/toolchain/linux/unbundle:host"
+v8_snapshot_toolchain="//build/common/toolchain/linux/unbundle:host"
 ```
 
 Note: when cross-compiling for a 32-bit target, a matching 32-bit toolchain

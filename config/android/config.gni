@@ -5,11 +5,11 @@
 # This file contains common system config stuff for the Android build.
 
 if (is_android) {
-  import("//build_overrides/build.gni")
+  import("//build/common_overrides/build.gni")
   import("abi.gni")
 
   has_chrome_android_internal =
-      exec_script("//build/dir_exists.py",
+      exec_script("//build/common/dir_exists.py",
                   [ rebase_path("//clank", root_build_dir) ],
                   "string") == "True"
 
@@ -34,7 +34,7 @@ if (is_android) {
   if (enable_chrome_android_internal) {
     import("//clank/config.gni")
   } else {
-    import("//build/config/android/sdk.gni")
+    import("//build/common/config/android/sdk.gni")
     declare_args() {
       # Android SDK release. Currently, only "o_mr1" is publicly supported.
       android_sdk_release = default_android_sdk_release
@@ -88,7 +88,7 @@ if (is_android) {
   }
 
   if (!defined(default_android_keystore_path)) {
-    default_android_keystore_path = "//build/android/chromium-debug.keystore"
+    default_android_keystore_path = "//build/common/android/chromium-debug.keystore"
     default_android_keystore_name = "chromiumdebugkey"
     default_android_keystore_password = "chromium"
   }

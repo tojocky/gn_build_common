@@ -23,7 +23,7 @@ Users wanting to build this configuration would run:
 
 And add the following line to their args for that build directory:
 
-  import("//build/args/foo.gni")
+  import("//build/common/args/foo.gni")
   # You can set any other args here like normal.
   is_component_build = false
 

@@ -5,8 +5,7 @@
 # Toolchain-related configuration that may be needed outside the context of the
 # toolchain() rules themselves.
 
-import("//build_overrides/build.gni")
-import("//build/config/chrome_build.gni")
+import("//build/common_overrides/build.gni")
 
 declare_args() {
   # If this is set to true, or if LLVM_FORCE_HEAD_REVISION is set to 1
@@ -43,7 +42,7 @@ if (generate_linker_map) {
 # The path to the hermetic install of Xcode. Only relevant when
 # use_system_xcode = false.
 hermetic_xcode_path =
-    rebase_path("//build/${target_os}_files/Xcode.app", "", root_build_dir)
+    rebase_path("//build/common/${target_os}_files/Xcode.app", "", root_build_dir)
 
 declare_args() {
   if (is_clang) {
@@ -102,7 +101,7 @@ stamp_description = "STAMP {{output}}"
 copy_description = "COPY {{source}} {{output}}"
 if (host_os == "win") {
   _tool_wrapper_path =
-      rebase_path("//build/toolchain/win/tool_wrapper.py", root_build_dir)
+      rebase_path("//build/common/toolchain/win/tool_wrapper.py", root_build_dir)
 
   stamp_command = "$python_path $_tool_wrapper_path stamp {{output}}"
   copy_command =

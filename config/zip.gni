@@ -17,7 +17,7 @@
 #     Normal meaning.
 template("zip") {
   action(target_name) {
-    script = "//build/android/gn/zip.py"
+    script = "//build/common/android/gn/zip.py"
     depfile = "$target_gen_dir/$target_name.d"
     inputs = invoker.inputs
     outputs = [

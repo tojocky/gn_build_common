@@ -29,7 +29,7 @@ public class FlushingReTrace {
 
     // Note: Order of these sub-patterns defines their precedence.
     // Note: Deobfuscation of methods without the presense of line numbers basically never works.
-    // There is a test for these pattern at //build/android/stacktrace/java_deobfuscate_test.py
+    // There is a test for these pattern at //build/common/android/stacktrace/java_deobfuscate_test.py
     private static final String LINE_PARSE_REGEX =
             // Eagerly match logcat prefix to avoid conflicting with the patterns below.
             LOGCAT_PREFIX

@@ -2,37 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
-import("//build/config/c++/c++.gni")
-import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
-import("//build/config/clang/clang.gni")
-import("//build/config/compiler/compiler.gni")
-import("//build/config/coverage/coverage.gni")
-import("//build/config/host_byteorder.gni")
-import("//build/config/ui.gni")
-import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/toolchain.gni")
-import("//build_overrides/build.gni")
+import("//build/common/config/android/config.gni")
+import("//build/common/config/c++/c++.gni")
+import("//build/common/config/chromecast_build.gni")
+import("//build/common/config/clang/clang.gni")
+import("//build/common/config/compiler/compiler.gni")
+import("//build/common/config/coverage/coverage.gni")
+import("//build/common/config/host_byteorder.gni")
+import("//build/common/config/ui.gni")
+import("//build/common/toolchain/cc_wrapper.gni")
+import("//build/common/toolchain/toolchain.gni")
+import("//build/common_overrides/build.gni")
 
 if (current_cpu == "arm" || current_cpu == "arm64") {
-  import("//build/config/arm.gni")
+  import("//build/common/config/arm.gni")
 }
 if (current_cpu == "mipsel" || current_cpu == "mips64el" ||
     current_cpu == "mips" || current_cpu == "mips64") {
-  import("//build/config/mips.gni")
+  import("//build/common/config/mips.gni")
 }
 if (is_mac) {
-  import("//build/config/mac/symbols.gni")
+  import("//build/common/config/mac/symbols.gni")
 }
 if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
+  import("//build/common/config/ios/ios_sdk.gni")
 }
 if (is_nacl) {
   # To keep NaCl variables out of builds that don't include NaCl, all
   # variables defined in nacl/config.gni referenced here should be protected by
   # is_nacl conditions.
-  import("//build/config/nacl/config.gni")
+  import("//build/common/config/nacl/config.gni")
 }
 
 declare_args() {
@@ -191,21 +190,21 @@ config("compiler") {
   # categories here, add it to the associated file to keep this shared config
   # smaller.
   if (is_win) {
-    configs += [ "//build/config/win:compiler" ]
+    configs += [ "//build/common/config/win:compiler" ]
   } else if (is_android) {
-    configs += [ "//build/config/android:compiler" ]
+    configs += [ "//build/common/config/android:compiler" ]
   } else if (is_linux) {
-    configs += [ "//build/config/linux:compiler" ]
+    configs += [ "//build/common/config/linux:compiler" ]
   } else if (is_nacl) {
-    configs += [ "//build/config/nacl:compiler" ]
+    configs += [ "//build/common/config/nacl:compiler" ]
   } else if (is_mac) {
-    configs += [ "//build/config/mac:compiler" ]
+    configs += [ "//build/common/config/mac:compiler" ]
   } else if (is_ios) {
-    configs += [ "//build/config/ios:compiler" ]
+    configs += [ "//build/common/config/ios:compiler" ]
   } else if (is_fuchsia) {
-    configs += [ "//build/config/fuchsia:compiler" ]
+    configs += [ "//build/common/config/fuchsia:compiler" ]
   } else if (current_os == "aix") {
-    configs += [ "//build/config/aix:compiler" ]
+    configs += [ "//build/common/config/aix:compiler" ]
   }
 
   configs += [
@@ -424,7 +423,7 @@ config("compiler") {
     cflags += [ "-pthread" ]
     # Do not use the -pthread ldflag here since it becomes a no-op
     # when using -nodefaultlibs, which would cause an unused argument
-    # error.  "-lpthread" is added in //build/config:default_libs.
+    # error.  "-lpthread" is added in //build/common/config:default_libs.
   }
 
   # Clang-specific compiler flags setup.
@@ -952,7 +951,7 @@ config("compiler_codegen") {
   cflags = []
 
   if (is_nacl) {
-    configs += [ "//build/config/nacl:compiler_codegen" ]
+    configs += [ "//build/common/config/nacl:compiler_codegen" ]
   } else if (is_posix && !is_mac && !is_ios) {
     if (current_cpu == "x86") {
       if (is_clang) {
@@ -986,7 +985,7 @@ config("compiler_codegen") {
 
 # This is separate from :compiler_codegen (and not even a sub-config there)
 # so that some targets can remove it from the list with:
-#   configs -= [ "//build/config/compiler:clang_stackrealign" ]
+#   configs -= [ "//build/common/config/compiler:clang_stackrealign" ]
 # See https://crbug.com/556393 for details of where it must be avoided.
 config("clang_stackrealign") {
   if (is_clang && current_cpu == "x86" && is_linux) {
@@ -1063,19 +1062,19 @@ config("runtime_library") {
   # categories here, add it to the associated file to keep this shared config
   # smaller.
   if (is_win) {
-    configs += [ "//build/config/win:runtime_library" ]
+    configs += [ "//build/common/config/win:runtime_library" ]
   } else if (is_linux) {
-    configs += [ "//build/config/linux:runtime_library" ]
+    configs += [ "//build/common/config/linux:runtime_library" ]
   } else if (is_ios) {
-    configs += [ "//build/config/ios:runtime_library" ]
+    configs += [ "//build/common/config/ios:runtime_library" ]
   } else if (is_mac) {
-    configs += [ "//build/config/mac:runtime_library" ]
+    configs += [ "//build/common/config/mac:runtime_library" ]
   } else if (is_android) {
-    configs += [ "//build/config/android:runtime_library" ]
+    configs += [ "//build/common/config/android:runtime_library" ]
   }
 
   if (is_posix) {
-    configs += [ "//build/config/posix:runtime_library" ]
+    configs += [ "//build/common/config/posix:runtime_library" ]
   }
 
   if (is_component_build) {
@@ -1586,8 +1585,8 @@ config("no_incompatible_pointer_warnings") {
 # You can override the optimization level on a per-target basis by removing the
 # default config and then adding the named one you want:
 #
-#   configs -= [ "//build/config/compiler:default_optimization" ]
-#   configs += [ "//build/config/compiler:optimize_max" ]
+#   configs -= [ "//build/common/config/compiler:default_optimization" ]
+#   configs += [ "//build/common/config/compiler:optimize_max" ]
 
 # Shared settings for both "optimize" and "optimize_max" configs.
 # IMPORTANT: On Windows "/O1" and "/O2" must go before the common flags.
@@ -1792,12 +1791,12 @@ config("optimize_max") {
     # The NaCl IRT is a special case and always wants its own config.
     # Various components do:
     #   if (!is_debug) {
-    #     configs -= [ "//build/config/compiler:default_optimization" ]
-    #     configs += [ "//build/config/compiler:optimize_max" ]
+    #     configs -= [ "//build/common/config/compiler:default_optimization" ]
+    #     configs += [ "//build/common/config/compiler:optimize_max" ]
     #   }
     # So this config has to have the selection logic just like
     # "default_optimization", below.
-    configs = [ "//build/config/nacl:irt_optimize" ]
+    configs = [ "//build/common/config/nacl:irt_optimize" ]
   } else {
     ldflags = common_optimize_on_ldflags
     if (is_win) {
@@ -1839,12 +1838,12 @@ config("optimize_speed") {
     # The NaCl IRT is a special case and always wants its own config.
     # Various components do:
     #   if (!is_debug) {
-    #     configs -= [ "//build/config/compiler:default_optimization" ]
-    #     configs += [ "//build/config/compiler:optimize_max" ]
+    #     configs -= [ "//build/common/config/compiler:default_optimization" ]
+    #     configs += [ "//build/common/config/compiler:optimize_max" ]
     #   }
     # So this config has to have the selection logic just like
     # "default_optimization", below.
-    configs = [ "//build/config/nacl:irt_optimize" ]
+    configs = [ "//build/common/config/nacl:irt_optimize" ]
   } else {
     ldflags = common_optimize_on_ldflags
     if (is_win) {
@@ -1884,7 +1883,7 @@ config("default_optimization") {
   if (is_nacl && is_nacl_irt) {
     # The NaCl IRT is a special case and always wants its own config.
     # It gets optimized the same way regardless of the type of build.
-    configs = [ "//build/config/nacl:irt_optimize" ]
+    configs = [ "//build/common/config/nacl:irt_optimize" ]
   } else if (is_debug) {
     configs = [ ":no_optimize" ]
   } else if (optimize_for_fuzzing) {
@@ -1950,8 +1949,8 @@ config("afdo") {
 # You can override the symbol level on a per-target basis by removing the
 # default config and then adding the named one you want:
 #
-#   configs -= [ "//build/config/compiler:default_symbols" ]
-#   configs += [ "//build/config/compiler:symbols" ]
+#   configs -= [ "//build/common/config/compiler:default_symbols" ]
+#   configs += [ "//build/common/config/compiler:symbols" ]
 
 # Full symbols.
 config("symbols") {

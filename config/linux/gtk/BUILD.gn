@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/linux/gtk/gtk.gni")
-import("//build/config/linux/pkg_config.gni")
+import("//build/common/config/linux/gtk/gtk.gni")
+import("//build/common/config/linux/pkg_config.gni")
 
 assert(is_linux, "This file should only be referenced on Linux")
 
@@ -30,11 +30,11 @@ group("gtk") {
 
   if (use_gtk3) {
     public_deps = [
-      "//build/config/linux/gtk3",
+      "//build/common/config/linux/gtk3",
     ]
   } else {
     public_deps = [
-      "//build/config/linux/gtk2",
+      "//build/common/config/linux/gtk2",
     ]
   }
 }

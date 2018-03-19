@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Do not add any imports to non-//build directories here.
+# Do not add any imports to non-//build/common directories here.
 # Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
-import("//build_overrides/build.gni")
-import("//build/config/android/config.gni")
-import("//build/config/dcheck_always_on.gni")
-import("//build/config/sanitizers/sanitizers.gni")
+import("//build/common_overrides/build.gni")
+import("//build/common/config/android/config.gni")
+import("//build/common/config/dcheck_always_on.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
 
 assert(is_android)
 
@@ -92,7 +92,7 @@ template("write_build_config") {
       deps += [ invoker.android_manifest_dep ]
     }
 
-    script = "//build/android/gyp/write_build_config.py"
+    script = "//build/common/android/gyp/write_build_config.py"
     depfile = "$target_gen_dir/$target_name.d"
     inputs = []
     outputs = [
@@ -397,7 +397,7 @@ template("copy_ex") {
     if (!defined(sources)) {
       sources = []
     }
-    script = "//build/android/gyp/copy_ex.py"
+    script = "//build/common/android/gyp/copy_ex.py"
 
     args = [
       "--dest",
@@ -473,12 +473,12 @@ template("test_runner_script") {
       data_deps = []
     }
 
-    script = "//build/android/gyp/create_test_runner_script.py"
+    script = "//build/common/android/gyp/create_test_runner_script.py"
     depfile = "$target_gen_dir/$target_name.d"
 
     data_deps += [
-      "//build/android:test_runner_py",
-      "//build/android:logdog_wrapper_py",
+      "//build/common/android:test_runner_py",
+      "//build/common/android:logdog_wrapper_py",
     ]
 
     data = []
@@ -692,7 +692,7 @@ template("stack_script") {
     data_deps +=
         [ "//third_party/android_platform/development/scripts:stack_py" ]
 
-    script = "//build/android/gyp/create_stack_script.py"
+    script = "//build/common/android/gyp/create_stack_script.py"
     depfile = "$target_gen_dir/$target_name.d"
 
     _stack_script = "//third_party/android_platform/development/scripts/stack"
@@ -727,7 +727,7 @@ template("stack_script") {
 }
 
 if (enable_java_templates) {
-  import("//build/config/zip.gni")
+  import("//build/common/config/zip.gni")
   import("//third_party/ijar/ijar.gni")
   import("//third_party/android_platform/config.gni")
 
@@ -750,7 +750,7 @@ if (enable_java_templates) {
       if (defined(invoker.lint_suppressions_file)) {
         lint_suppressions_file = invoker.lint_suppressions_file
       } else if (!defined(lint_suppressions_file)) {
-        lint_suppressions_file = "//build/android/lint/suppressions.xml"
+        lint_suppressions_file = "//build/common/android/lint/suppressions.xml"
       }
 
       _lint_path = "$lint_android_sdk_root/tools/bin/lint"
@@ -761,7 +761,7 @@ if (enable_java_templates) {
       _platform_xml_path =
           "${android_sdk_root}/platform-tools/api/api-versions.xml"
 
-      script = "//build/android/gyp/lint.py"
+      script = "//build/common/android/gyp/lint.py"
       depfile = "$target_gen_dir/$target_name.d"
       inputs = [
         _platform_xml_path,
@@ -821,7 +821,7 @@ if (enable_java_templates) {
               rebase_path(invoker.java_sources_file, root_build_dir)
           args += [ "--java-sources-file=$_rebased_java_sources_file" ]
         }
-        deps += [ "//build/android:prepare_android_lint_cache" ]
+        deps += [ "//build/common/android:prepare_android_lint_cache" ]
 
         _rebased_build_config =
             rebase_path(invoker.build_config, root_build_dir)
@@ -849,10 +849,10 @@ if (enable_java_templates) {
                                "public_deps",
                                "testonly",
                              ])
-      script = "//build/android/gyp/proguard.py"
+      script = "//build/common/android/gyp/proguard.py"
 
       # http://crbug.com/725224. Fix for bots running out of memory.
-      pool = "//build/toolchain:link_pool($default_toolchain)"
+      pool = "//build/common/toolchain:link_pool($default_toolchain)"
 
       _output_jar_path = invoker.output_jar_path
       _proguard_jar_path = _default_proguard_jar_path
@@ -924,7 +924,7 @@ if (enable_java_templates) {
       _build_config = invoker.build_config
       _script_name = invoker.script_name
 
-      script = "//build/android/gyp/create_java_binary_script.py"
+      script = "//build/common/android/gyp/create_java_binary_script.py"
       depfile = "$target_gen_dir/$_script_name.d"
       _java_script = "$root_build_dir/bin/$_script_name"
       inputs = [
@@ -986,13 +986,13 @@ if (enable_java_templates) {
                                  "testonly",
                                ])
 
-        script = "//build/android/gyp/main_dex_list.py"
+        script = "//build/common/android/gyp/main_dex_list.py"
         depfile = "$target_gen_dir/$target_name.d"
 
         # http://crbug.com/725224. Fix for bots running out of memory.
-        pool = "//build/toolchain:link_pool($default_toolchain)"
+        pool = "//build/common/toolchain:link_pool($default_toolchain)"
 
-        main_dex_rules = "//build/android/main_dex_classes.flags"
+        main_dex_rules = "//build/common/android/main_dex_classes.flags"
 
         if (defined(invoker.proguard_jar_path)) {
           _proguard_jar_path = invoker.proguard_jar_path
@@ -1052,14 +1052,14 @@ if (enable_java_templates) {
                                "sources",
                                "testonly",
                              ])
-      script = "//build/android/gyp/dex.py"
+      script = "//build/common/android/gyp/dex.py"
       depfile = "$target_gen_dir/$target_name.d"
       outputs = [
         invoker.output,
       ]
 
       if (defined(invoker.use_pool) && invoker.use_pool) {
-        pool = "//build/toolchain:link_pool($default_toolchain)"
+        pool = "//build/common/toolchain:link_pool($default_toolchain)"
       }
 
       rebased_output = rebase_path(invoker.output, root_build_dir)
@@ -1115,7 +1115,7 @@ if (enable_java_templates) {
       _source_dirs_listing_file = "$target_out_dir/${target_name}_sources.txt"
       _emma_jar = "${android_sdk_root}/tools/lib/emma.jar"
 
-      script = "//build/android/gyp/emma_instr.py"
+      script = "//build/common/android/gyp/emma_instr.py"
       depfile = "${target_gen_dir}/${target_name}.d"
       inputs = invoker.java_files + [
                  _emma_jar,
@@ -1208,12 +1208,12 @@ if (enable_java_templates) {
           "$target_out_dir/$target_name-bytecode-rewritten.jar"
 
       action(_java_bytecode_rewriter_target) {
-        script = "//build/android/gyp/bytecode_processor.py"
+        script = "//build/common/android/gyp/bytecode_processor.py"
         depfile = "$target_gen_dir/$target_name.d"
         _bytecode_rewriter_script =
             "$root_build_dir/bin/helper/java_bytecode_rewriter"
         deps = [
-          "//build/android/bytecode:java_bytecode_rewriter($default_toolchain)",
+          "//build/common/android/bytecode:java_bytecode_rewriter($default_toolchain)",
         ]
         deps += _deps
         if (defined(invoker.deps)) {
@@ -1269,7 +1269,7 @@ if (enable_java_templates) {
       _desugar_output_jar = "$target_out_dir/$target_name-desugar.jar"
 
       action(_desugar_target) {
-        script = "//build/android/gyp/desugar.py"
+        script = "//build/common/android/gyp/desugar.py"
         depfile = "$target_gen_dir/$target_name.d"
         deps = _deps
         if (defined(invoker.deps)) {
@@ -1289,7 +1289,7 @@ if (enable_java_templates) {
           deps += [ invoker.alternative_android_sdk_ijar_dep ]
           _android_sdk_ijar = invoker.alternative_android_sdk_ijar
         } else {
-          deps += [ "//build/android:android_ijar" ]
+          deps += [ "//build/common/android:android_ijar" ]
           _android_sdk_ijar = "$root_out_dir/lib.java/android.interface.jar"
         }
         inputs += [ _android_sdk_ijar ]
@@ -1317,7 +1317,7 @@ if (enable_java_templates) {
       _filter_output_jar = "$target_out_dir/$target_name-filtered.jar"
 
       action(_filter_target) {
-        script = "//build/android/gyp/jar.py"
+        script = "//build/common/android/gyp/jar.py"
         deps = _deps
         if (defined(invoker.deps)) {
           deps += invoker.deps
@@ -1421,7 +1421,7 @@ if (enable_java_templates) {
                                "deps",
                                "testonly",
                              ])
-      script = "//build/android/gyp/merge_manifest.py"
+      script = "//build/common/android/gyp/merge_manifest.py"
       depfile = "$target_gen_dir/$target_name.d"
 
       inputs = [
@@ -1472,7 +1472,7 @@ if (enable_java_templates) {
                                "testonly",
                                "visibility",
                              ])
-      script = "//build/android/gyp/process_resources.py"
+      script = "//build/common/android/gyp/process_resources.py"
 
       depfile = "$target_gen_dir/${invoker.target_name}_1.d"
       outputs = []
@@ -1483,10 +1483,10 @@ if (enable_java_templates) {
         _all_resource_dirs += invoker.resource_dirs
 
         # Speed up "gn gen" by short-circuiting the empty directory.
-        if (invoker.resource_dirs != [ "//build/android/empty" ] &&
+        if (invoker.resource_dirs != [ "//build/common/android/empty" ] &&
             invoker.resource_dirs != []) {
           _sources_build_rel =
-              exec_script("//build/android/gyp/find.py",
+              exec_script("//build/common/android/gyp/find.py",
                           rebase_path(invoker.resource_dirs, root_build_dir),
                           "list lines")
           sources += rebase_path(_sources_build_rel, ".", root_build_dir)
@@ -1749,7 +1749,7 @@ if (enable_java_templates) {
         _native_lib_placeholders = invoker.native_lib_placeholders
       }
 
-      script = "//build/android/gyp/apkbuilder.py"
+      script = "//build/common/android/gyp/apkbuilder.py"
       depfile = "$target_gen_dir/$target_name.d"
       data_deps = [
         "//tools/android/md5sum",
@@ -1862,7 +1862,7 @@ if (enable_java_templates) {
                                "testonly",
                              ])
 
-      script = "//build/android/gyp/finalize_apk.py"
+      script = "//build/common/android/gyp/finalize_apk.py"
       _apksigner = "$android_sdk_build_tools/apksigner"
       _zipalign = "$android_sdk_build_tools/zipalign"
       inputs = [
@@ -1959,10 +1959,10 @@ if (enable_java_templates) {
     action(_incremental_package_resources_target_name) {
       deps = _incremental_deps
       script =
-          "//build/android/incremental_install/generate_android_manifest.py"
+          "//build/common/android/incremental_install/generate_android_manifest.py"
       inputs = [
         # Save on a depfile by listing only .py dep here.
-        "//build/android/gyp/util/build_utils.py",
+        "//build/common/android/gyp/util/build_utils.py",
         _android_manifest,
         invoker.packaged_resources_path,
       ]
@@ -2034,7 +2034,7 @@ if (enable_java_templates) {
       if (!defined(uncompress_shared_libraries)) {
         uncompress_shared_libraries = _load_library_from_apk
       }
-      _dex_target = "//build/android/incremental_install:bootstrap_java__dex"
+      _dex_target = "//build/common/android/incremental_install:bootstrap_java__dex"
       deps = _incremental_deps + [
                ":${_incremental_package_resources_target_name}",
                _dex_target,
@@ -2143,7 +2143,7 @@ if (enable_java_templates) {
     }
 
     action(target_name) {
-      script = "//build/android/gyp/javac.py"
+      script = "//build/common/android/gyp/javac.py"
       depfile = "$target_gen_dir/$target_name.d"
       deps = _srcjar_deps
       if (defined(invoker.deps)) {
@@ -2187,7 +2187,7 @@ if (enable_java_templates) {
           deps += [ invoker.alternative_android_sdk_ijar_dep ]
           _android_sdk_ijar = invoker.alternative_android_sdk_ijar
         } else {
-          deps += [ "//build/android:android_ijar" ]
+          deps += [ "//build/common/android:android_ijar" ]
           _android_sdk_ijar = "$root_out_dir/lib.java/android.interface.jar"
         }
         inputs += [ _android_sdk_ijar ]
@@ -2337,7 +2337,7 @@ if (enable_java_templates) {
         _supports_android &&
         (!defined(invoker.no_build_hooks) || !invoker.no_build_hooks)
     if (_enable_build_hooks) {
-      _accumulated_deps += [ "//build/android/buildhooks:build_hooks_java" ]
+      _accumulated_deps += [ "//build/common/android/buildhooks:build_hooks_java" ]
     }
 
     # Some testonly targets use their own resources and the code being
@@ -2348,7 +2348,7 @@ if (enable_java_templates) {
         (!defined(invoker.testonly) || !invoker.testonly)
     if (_enable_build_hooks_android) {
       _accumulated_deps +=
-          [ "//build/android/buildhooks:build_hooks_android_java" ]
+          [ "//build/common/android/buildhooks:build_hooks_android_java" ]
     }
 
     # Don't enable coverage or lint unless the target has some non-generated
@@ -2649,7 +2649,7 @@ if (enable_java_templates) {
                                "inputs",
                                "testonly",
                              ])
-      script = "//build/android/gyp/pack_relocations.py"
+      script = "//build/common/android/gyp/pack_relocations.py"
       depfile = "$target_gen_dir/$target_name.d"
       _packed_libraries_dir = "$target_gen_dir/$target_name/packed-libs"
       outputs = [

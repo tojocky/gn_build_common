@@ -62,7 +62,7 @@ template("process_version") {
   }
 
   action(action_name) {
-    script = "//build/util/version.py"
+    script = "//build/common/util/version.py"
 
     inputs = []
     if (defined(invoker.inputs)) {

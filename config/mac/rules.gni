@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/mac/base_rules.gni")
+import("//build/common/config/mac/base_rules.gni")
 
 # Generates Info.plist files for Mac apps and frameworks.
 #
@@ -47,7 +47,7 @@ template("mac_info_plist") {
       "MAC_SDK_NAME=$mac_sdk_name$mac_sdk_version",
     ]
     plist_templates = [
-      "//build/config/mac/BuildInfo.plist",
+      "//build/common/config/mac/BuildInfo.plist",
       _info_plist,
     ]
     if (defined(invoker.info_plist_target)) {
@@ -295,7 +295,7 @@ template("mac_framework_bundle") {
     _version_arg = _framework_version
   }
   _version_file = "$target_out_dir/${target_name}_version"
-  exec_script("//build/config/mac/prepare_framework_version.py",
+  exec_script("//build/common/config/mac/prepare_framework_version.py",
               [
                 rebase_path(_version_file),
                 rebase_path(_framework_base_dir),
@@ -305,7 +305,7 @@ template("mac_framework_bundle") {
   # Create the symlinks.
   _framework_package_target = target_name + "_package"
   action(_framework_package_target) {
-    script = "//build/config/mac/package_framework.py"
+    script = "//build/common/config/mac/package_framework.py"
 
     # The TOC file never needs to be read, since its contents are the values
     # of GN variables. It is only used to trigger this rule when the values
@@ -525,7 +525,7 @@ template("mac_app_bundle") {
 
     action(_pkg_info_target) {
       forward_variables_from(invoker, [ "testonly" ])
-      script = "//build/config/mac/write_pkg_info.py"
+      script = "//build/common/config/mac/write_pkg_info.py"
       sources = get_target_outputs(":$_info_plist_target")
       outputs = [
         "$target_gen_dir/$_pkg_info_target",

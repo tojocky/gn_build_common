@@ -5,9 +5,9 @@
 # Do not use the targets in this file unless you need a certain libjpeg
 # implementation. Use the meta target //third_party:jpeg instead.
 
-import("//build/config/sanitizers/sanitizers.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
 if (current_cpu == "arm") {
-  import("//build/config/arm.gni")
+  import("//build/common/config/arm.gni")
 }
 
 assert(!is_ios, "This is not used on iOS, don't drag it in unintentionally")

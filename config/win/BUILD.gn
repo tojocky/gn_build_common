@@ -2,13 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chrome_build.gni")
-import("//build/config/c++/c++.gni")
-import("//build/config/clang/clang.gni")
-import("//build/config/compiler/compiler.gni")
-import("//build/config/sanitizers/sanitizers.gni")
-import("//build/config/win/visual_studio_version.gni")
-import("//build/toolchain/toolchain.gni")
+import("//build/common/config/c++/c++.gni")
+import("//build/common/config/clang/clang.gni")
+import("//build/common/config/compiler/compiler.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
+import("//build/common/config/win/visual_studio_version.gni")
+import("//build/common/toolchain/toolchain.gni")
 
 assert(is_win)
 
@@ -26,7 +25,7 @@ declare_args() {
   win_compiler_timing = false
 }
 
-# This is included by reference in the //build/config/compiler config that
+# This is included by reference in the //build/common/config/compiler config that
 # is applied to all targets. It is here to separate out the logic that is
 # Windows-only.
 config("compiler") {
@@ -71,7 +70,7 @@ config("compiler") {
       cflags += [ "-m64" ]
     }
 
-    if (exec_script("//build/win/use_ansi_codes.py", [], "trim string") ==
+    if (exec_script("//build/common/win/use_ansi_codes.py", [], "trim string") ==
         "True") {
       cflags += [
         # cmd.exe doesn't understand ANSI escape codes by default,
@@ -190,7 +189,7 @@ config("vs_code_analysis") {
   }
 }
 
-# This is included by reference in the //build/config/compiler:runtime_library
+# This is included by reference in the //build/common/config/compiler:runtime_library
 # config that is applied to all targets. It is here to separate out the logic
 # that is Windows-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
@@ -305,7 +304,7 @@ config("cfi_linker") {
   # CFG, ThinLTO and RTTI don't currently work together, so turn off
   # CFG for that combination. We detect RTTI by looking for
   # use_cfi_diag || is_ubsan_vptr || is_ubsan_security, as per
-  # //build/config/compiler/BUILD.gn.
+  # //build/common/config/compiler/BUILD.gn.
   # TODO(inglorion): Re-enable once figured out, bug https://crbug.com/818086
   if (!is_debug && !is_component_build &&
       !(use_thin_lto && (use_cfi_diag || is_ubsan_vptr || is_ubsan_security))) {
@@ -470,23 +469,5 @@ config("target_winrt") {
   cflags_cc = [
     "/ZW",
     "/EHsc",
-  ]
-}
-
-# Generating order files -------------------------------------------------------
-
-config("default_cygprofile_instrumentation") {
-  if (generate_order_files) {
-    assert(is_clang, "cygprofile instrumentation only works with clang")
-    assert(is_official_build, "order files should be made w/ official builds")
-    assert(!is_chrome_branded, "order files could leak internal symbol names")
-    configs = [ ":cygprofile_instrumentation" ]
-  }
-}
-
-config("cygprofile_instrumentation") {
-  cflags = [
-    "-Xclang",
-    "-finstrument-functions-after-inlining",
   ]
 }

@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/clang/clang.gni")
-import("//build/config/sysroot.gni")  # Imports android/config.gni.
-import("//build/toolchain/gcc_toolchain.gni")
+import("//build/common/config/clang/clang.gni")
+import("//build/common/config/sysroot.gni")  # Imports android/config.gni.
+import("//build/common/toolchain/gcc_toolchain.gni")
 
 # The Android clang toolchains share most of the same parameters, so we have this
 # wrapper around gcc_toolchain to avoid duplication of logic.

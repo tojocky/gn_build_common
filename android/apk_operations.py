@@ -942,7 +942,7 @@ class _ArgvCommand(_Command):
 
 class _GdbCommand(_Command):
   name = 'gdb'
-  description = 'Runs //build/android/adb_gdb with apk-specific args.'
+  description = 'Runs //build/common/android/adb_gdb with apk-specific args.'
   long_description = description + """
 
 To attach to a process other than the APK's main process, use --pid=1234.

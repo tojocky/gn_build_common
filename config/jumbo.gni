@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/split_static_library.gni")  # When someone uses that target_type
-import("//build/toolchain/goma.gni")
+import("//build/common/split_static_library.gni")  # When someone uses that target_type
+import("//build/common/toolchain/goma.gni")
 
 declare_args() {
   # If true, use a jumbo build (files compiled together) to speed up
@@ -151,7 +151,7 @@ template("internal_jumbo_target") {
 
     # Create an action that calls a script that merges all the source files.
     action(merge_action_name) {
-      script = "//build/config/merge_for_jumbo.py"
+      script = "//build/common/config/merge_for_jumbo.py"
       response_file_contents =
           rebase_path(invoker_sources - excluded_sources, root_build_dir)
       outputs = jumbo_files
@@ -273,7 +273,7 @@ set_defaults("jumbo_component") {
   if (is_component_build) {
     configs = default_shared_library_configs
     if (is_android) {
-      configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+      configs -= [ "//build/common/config/android:hide_all_but_jni_onload" ]
     }
   } else {
     configs = default_compiler_configs

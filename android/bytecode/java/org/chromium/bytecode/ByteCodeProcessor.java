@@ -137,7 +137,7 @@ class ByteCodeProcessor {
     }
 
     public static void main(String[] args) {
-        // Invoke this script using //build/android/gyp/bytecode_processor.py
+        // Invoke this script using //build/common/android/gyp/bytecode_processor.py
         String inputJarPath = args[0];
         String outputJarPath = args[1];
         boolean shouldAssert = args[2].equals("--enable-assert");

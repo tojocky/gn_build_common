@@ -19,27 +19,27 @@
 # behind a "if (is_component_build)" conditional.
 #
 # Generally you will just want the defaults for the Chrome build. In this case
-# the binary should just depend on one of the targets in //build/win/. There
+# the binary should just depend on one of the targets in //build/common/win/. There
 # are also individual manifest files in that directory you can reference via
 # the *_manifest variables defined below to pick and choose only some defaults.
 # You might combine these with a custom manifest file to get specific behavior.
 
 # Reference this manifest as a source from windows_manifest targets to get
 # the default Chrome OS compatibility list.
-default_compatibility_manifest = "//build/win/compatibility.manifest"
+default_compatibility_manifest = "//build/common/win/compatibility.manifest"
 
 # Reference this manifest as a source from windows_manifest targets to get
 # the default Chrome common constrols compatibility.
-common_controls_manifest = "//build/win/common_controls.manifest"
+common_controls_manifest = "//build/common/win/common_controls.manifest"
 
 # Reference this manifest to request that Windows not perform any elevation
 # when running your program. Otherwise, it might do some autodetection and
 # request elevated privileges from the user. This is normally what you want.
-as_invoker_manifest = "//build/win/as_invoker.manifest"
+as_invoker_manifest = "//build/common/win/as_invoker.manifest"
 
 # An alternative to as_invoker_manifest when you want the application to always
 # elevate.
-require_administrator_manifest = "//build/win/require_administrator.manifest"
+require_administrator_manifest = "//build/common/win/require_administrator.manifest"
 
 # Construct a target to combine the given manifest files into a .rc file.
 #

@@ -9,15 +9,15 @@
 # These flags are effectively global. Your feature flag should go near the
 # code it controls. Most of these items are here now because they control
 # legacy global #defines passed to the compiler (now replaced with generated
-# buildflag headers -- see //build/buildflag_header.gni).
+# buildflag headers -- see //build/common/buildflag_header.gni).
 #
 # These flags are ui-related so should eventually be moved to various places
 # in //ui/*.
 #
 # There is more advice on where to put build flags in the "Build flag" section
-# of //build/config/BUILDCONFIG.gn.
+# of //build/common/config/BUILDCONFIG.gn.
 
-import("//build/config/chromecast_build.gni")
+import("//build/common/config/chromecast_build.gni")
 
 declare_args() {
   # Indicates if Ozone is enabled. Ozone is a low-level library layer for Linux

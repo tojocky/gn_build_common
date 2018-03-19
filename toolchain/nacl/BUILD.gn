@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/sysroot.gni")
-import("//build/config/nacl/config.gni")
-import("//build/toolchain/nacl_toolchain.gni")
+import("//build/common/config/sysroot.gni")
+import("//build/common/config/nacl/config.gni")
+import("//build/common/toolchain/nacl_toolchain.gni")
 
 # Add the toolchain revision as a preprocessor define so that sources are
 # rebuilt when a toolchain is updated.
@@ -36,7 +36,7 @@ if (host_os == "win") {
 # file you are.  But on Windows, scripts (.bat files) cannot be run
 # directly and need the Windows shell (cmd.exe) specified explicily.
 if (host_os == "win") {
-  # NOTE!  The //build/toolchain/gcc_*_wrapper.py scripts recognize
+  # NOTE!  The //build/common/toolchain/gcc_*_wrapper.py scripts recognize
   # this exact prefix string, so they must be updated if this string
   # is changed in any way.
   scriptprefix = "cmd /c call "

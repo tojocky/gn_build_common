@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/compiler/compiler.gni")
-import("//build/config/sysroot.gni")
-import("//build/toolchain/gcc_toolchain.gni")
-import("//build/toolchain/cros_toolchain.gni")
+import("//build/common/config/compiler/compiler.gni")
+import("//build/common/config/sysroot.gni")
+import("//build/common/toolchain/gcc_toolchain.gni")
+import("//build/common/toolchain/cros_toolchain.gni")
 
 # This is the normal toolchain for most targets.
 gcc_toolchain("target") {

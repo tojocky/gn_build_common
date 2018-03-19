@@ -3,16 +3,15 @@
 # found in the LICENSE file.
 
 if (is_android) {
-  import("//build/config/android/abi.gni")
+  import("//build/common/config/android/abi.gni")
 }
-import("//build/config/arm.gni")
-import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
-import("//build/config/compiler/pgo/pgo.gni")
-import("//build/config/sanitizers/sanitizers.gni")
-import("//build/toolchain/goma.gni")
-import("//build/toolchain/toolchain.gni")
-import("//build_overrides/build.gni")
+import("//build/common/config/arm.gni")
+import("//build/common/config/chromecast_build.gni")
+import("//build/common/config/compiler/pgo/pgo.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
+import("//build/common/toolchain/goma.gni")
+import("//build/common/toolchain/toolchain.gni")
+import("//build/common_overrides/build.gni")
 
 declare_args() {
   # How many symbols to include in the build. This affects the performance of

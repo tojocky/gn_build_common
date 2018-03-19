@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/c++/c++.gni")
-import("//build/config/compiler/compiler.gni")
-import("//build/config/sanitizers/sanitizers.gni")
-import("//build/config/sysroot.gni")
-import("//build/toolchain/toolchain.gni")
+import("//build/common/config/c++/c++.gni")
+import("//build/common/config/compiler/compiler.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
+import("//build/common/config/sysroot.gni")
+import("//build/common/toolchain/toolchain.gni")
 
 declare_args() {
   # When non empty, overrides the target rpath value. This allows a user to
@@ -68,7 +68,7 @@ config("symbol_visibility_default") {
 # this is OK. For these cases use something like this:
 #
 #  if (is_linux && !is_component_build) {
-#    configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+#    configs += [ "//build/common/config/gcc:rpath_for_built_shared_libraries" ]
 #  }
 config("rpath_for_built_shared_libraries") {
   if (!is_android) {

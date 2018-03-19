@@ -151,7 +151,7 @@ def FindFirstOf(s, a):
 
 def GetCMakeTargetName(gn_target_name):
   # See <chromium>/src/tools/gn/label.cc#Resolve
-  # //base/test:test_support(//build/toolchain/win:msvc)
+  # //base/test:test_support(//build/common/toolchain/win:msvc)
   path_separator = FindFirstOf(gn_target_name, (':', '('))
   location = None
   name = None

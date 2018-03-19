@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/win/manifest.gni")
+import("//build/common/config/win/manifest.gni")
 
 # Depending on this target will cause the manifests for Chrome's default
 # Windows and common control compatibility and elevation for executables.
@@ -16,7 +16,7 @@ windows_manifest("default_exe_manifest") {
 
 if (is_win) {
   action("copy_cdb_to_output") {
-    script = "//build/win/copy_cdb_to_output.py"
+    script = "//build/common/win/copy_cdb_to_output.py"
     inputs = [
       script,
     ]

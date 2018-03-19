@@ -2,7 +2,7 @@
 
 This folder contains APKs for official (upstream) builds for each milestone.
 The primary use for these APKs is per-milestone binary size analysis.
-  * `//build/android/resource_sizes.py` uses them for calculating patch size
+  * `//build/common/android/resource_sizes.py` uses them for calculating patch size
   * They can be used with `tools/binary_size/diagnose_bloat.py` for analyzing
     what grew in an APK milestone-to-milestone
 

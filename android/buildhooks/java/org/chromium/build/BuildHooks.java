@@ -20,7 +20,7 @@ public abstract class BuildHooks {
 
     /**
      * This method is used to handle assert failures when asserts are enabled by
-     * //build/android/bytecode:java_bytecode_rewriter. For non-release builds, this is always
+     * //build/common/android/bytecode:java_bytecode_rewriter. For non-release builds, this is always
      * enabled and assert failures will result in an assertion error being thrown. For release
      * builds, this is only enabled when report_java_assert = true. Assert failures will result in
      * an error report being uploaded to the crash servers only if the callback is set (so that this

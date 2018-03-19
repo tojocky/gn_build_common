@@ -674,7 +674,7 @@ def _AnnotatePakResources(out_dir):
   return id_name_map, id_header_map
 
 
-# This method also used by //build/android/gyp/assert_static_initializers.py
+# This method also used by //build/common/android/gyp/assert_static_initializers.py
 def AnalyzeStaticInitializers(apk_filename, tool_prefix, dump_sis, out_dir):
   # Static initializer counting mostly copies logic in
   # infra/scripts/legacy/scripts/slave/chromium/sizes.py.

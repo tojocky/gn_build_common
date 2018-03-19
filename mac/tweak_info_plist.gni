@@ -30,7 +30,7 @@ template("tweak_info_plist") {
 
     action(target_name + "_merge_plist") {
       forward_variables_from(invoker, [ "testonly" ])
-      script = "//build/config/mac/plist_util.py"
+      script = "//build/common/config/mac/plist_util.py"
       sources = invoker.info_plists
       outputs = [
         _source_name,
@@ -55,11 +55,11 @@ template("tweak_info_plist") {
                              "args",
                              "testonly",
                            ])
-    script = "//build/mac/tweak_info_plist.py"
+    script = "//build/common/mac/tweak_info_plist.py"
     inputs = [
       script,
-      "//build/util/version.py",
-      "//build/util/LASTCHANGE",
+      "//build/common/util/version.py",
+      "//build/common/util/LASTCHANGE",
       "//chrome/VERSION",
     ]
     sources = [

@@ -95,7 +95,7 @@
 #   }
 template("buildflag_header") {
   action(target_name) {
-    script = "//build/write_buildflag_header.py"
+    script = "//build/common/write_buildflag_header.py"
 
     if (defined(invoker.header_dir)) {
       header_file = "${invoker.header_dir}/${invoker.header}"
@@ -135,7 +135,7 @@ template("buildflag_header") {
                            ])
 
     public_deps = [
-      "//build:buildflag_header_h",
+      "//build/common:buildflag_header_h",
     ]
   }
 }

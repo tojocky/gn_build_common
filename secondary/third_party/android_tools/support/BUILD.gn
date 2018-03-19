@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
+import("//build/common/config/android/rules.gni")
 
 visibility = [ ":*" ]
 
@@ -11,7 +11,7 @@ lib_path = "//third_party/android_tools/sdk/extras/android/m2repository/com/andr
 arch_lib_version = "1.0.0"
 arch_lib_path =
     "//third_party/android_tools/sdk/extras/android/m2repository/android/arch"
-build_file_dir = "//build/secondary/third_party/android_tools/support"
+build_file_dir = "//build/common/secondary/third_party/android_tools/support"
 
 android_library("android_support_chromium_java") {
   testonly = true

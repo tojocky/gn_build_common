@@ -4,13 +4,13 @@
 
 # This file contains rules that are shared between Mac and iOS.
 
-import("//build/toolchain/toolchain.gni")
-import("//build/config/mac/symbols.gni")
+import("//build/common/toolchain/toolchain.gni")
+import("//build/common/config/mac/symbols.gni")
 
 if (is_mac) {
-  import("//build/config/mac/mac_sdk.gni")
+  import("//build/common/config/mac/mac_sdk.gni")
 } else if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
+  import("//build/common/config/ios/ios_sdk.gni")
 }
 
 # Convert plist file to given format.
@@ -38,7 +38,7 @@ template("convert_plist") {
                              "deps",
                            ])
 
-    script = "//build/config/mac/xcrun.py"
+    script = "//build/common/config/mac/xcrun.py"
     sources = [
       invoker.source,
     ]
@@ -104,7 +104,7 @@ template("compile_plist") {
                              "testonly",
                            ])
 
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/common/config/mac/plist_util.py"
     sources = invoker.plist_templates
     outputs = [
       _merged_name,
@@ -122,7 +122,7 @@ template("compile_plist") {
                              "testonly",
                              "visibility",
                            ])
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/common/config/mac/plist_util.py"
     sources = [
       _merged_name,
     ]
@@ -281,7 +281,7 @@ template("compile_ib_files") {
 
     _output_extension = invoker.output_extension
 
-    script = "//build/config/mac/compile_ib_files.py"
+    script = "//build/common/config/mac/compile_ib_files.py"
     sources = invoker.sources
     outputs = [
       "$target_gen_dir/$target_name/{{source_name_part}}.$_output_extension",

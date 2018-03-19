@@ -1,4 +1,4 @@
-import("//build/config/android/rules.gni")
+import("//build/common/config/android/rules.gni")
 
 java_library("hello_world_java") {
   java_files = [ "java/org/chromium/helloworld/HelloWorldPrinter.java" ]

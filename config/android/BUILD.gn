@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
-import("//build/config/sanitizers/sanitizers.gni")
+import("//build/common/config/android/config.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
 
 assert(is_android)
 
-# This is included by reference in the //build/config/compiler config that
+# This is included by reference in the //build/common/config/compiler config that
 # is applied to all targets. It is here to separate out the logic that is
 # Android-only.
 config("compiler") {
@@ -49,7 +49,7 @@ config("compiler") {
   ]
 
   # $compile_api_level corresponds to the API level used for the sysroot path
-  # calculation in //build/config/android/config.gni
+  # calculation in //build/common/config/android/config.gni
   if (current_cpu == "arm") {
     abi_target = "arm-linux-androideabi"
     compile_api_level = android32_ndk_api_level
@@ -101,7 +101,7 @@ config("compiler") {
   asmflags = cflags
 }
 
-# This is included by reference in the //build/config/compiler:runtime_library
+# This is included by reference in the //build/common/config/compiler:runtime_library
 # config that is applied to all targets. It is here to separate out the logic
 # that is Android-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
@@ -185,12 +185,12 @@ config("executable_config") {
 
 config("hide_all_but_jni_onload") {
   ldflags = [ "-Wl,--version-script=" + rebase_path(
-                  "//build/android/android_only_explicit_jni_exports.lst") ]
+                  "//build/common/android/android_only_explicit_jni_exports.lst") ]
 }
 
 config("hide_all_but_jni") {
   ldflags = [ "-Wl,--version-script=" +
-              rebase_path("//build/android/android_only_jni_exports.lst") ]
+              rebase_path("//build/common/android/android_only_jni_exports.lst") ]
 }
 
 config("lld_pack_relocations") {
@@ -203,8 +203,8 @@ config("lld_pack_relocations") {
 # targets by default. You can override whether the cygprofile instrumentation is
 # used on a per-target basis:
 #
-# configs -= [ "//build/config/android:default_cygprofile_instrumentation" ]
-# configs += [ "//build/config/android:no_cygprofile_instrumentation" ]
+# configs -= [ "//build/common/config/android:default_cygprofile_instrumentation" ]
+# configs += [ "//build/common/config/android:no_cygprofile_instrumentation" ]
 
 config("default_cygprofile_instrumentation") {
   if (use_order_profiling) {

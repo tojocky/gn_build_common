@@ -4,8 +4,8 @@
 
 assert(is_fuchsia)
 
-import("//build/config/chromecast_build.gni")
-import("//build/config/fuchsia/package.gni")
+import("//build/common/config/chromecast_build.gni")
+import("//build/common/config/fuchsia/package.gni")
 
 template("generate_runner_script") {
   # This runtime_deps file is used at runtime and thus cannot go in
@@ -50,7 +50,7 @@ template("generate_runner_script") {
                              "testonly",
                            ])
 
-    script = "//build/fuchsia/create_runner_script.py"
+    script = "//build/common/fuchsia/create_runner_script.py"
     depfile = "$target_gen_dir/$target_name.d"
 
     outputs = [
@@ -59,8 +59,8 @@ template("generate_runner_script") {
 
     data = [
       invoker.generated_script,
-      "//build/fuchsia/",
-      "//build/util/lib/",
+      "//build/common/fuchsia/",
+      "//build/common/util/lib/",
       "//third_party/fuchsia-sdk/",
       _runtime_deps_file,
     ]
@@ -108,7 +108,7 @@ template("generate_runner_script") {
 
     _generated_script = "${invoker.generated_script}_v2"
 
-    script = "//build/fuchsia/runner_v2/create_runner_script.py"
+    script = "//build/common/fuchsia/runner_v2/create_runner_script.py"
 
     outputs = [
       _generated_script,
@@ -117,8 +117,8 @@ template("generate_runner_script") {
     data = [
       _generated_script,
       _manifest_path,
-      "//build/fuchsia/runner_v2/",
-      "//build/util/lib/",
+      "//build/common/fuchsia/runner_v2/",
+      "//build/common/util/lib/",
       "//third_party/fuchsia-sdk/",
     ]
 

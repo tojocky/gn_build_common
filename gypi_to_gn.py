@@ -44,7 +44,7 @@ Say your_file.gypi looked like this:
   }
 
 You would call it like this:
-  gypi_values = exec_script("//build/gypi_to_gn.py",
+  gypi_values = exec_script("//build/common/gypi_to_gn.py",
                             [ rebase_path("your_file.gypi") ],
                             "scope",
                             [ "your_file.gypi" ])
@@ -84,7 +84,7 @@ Generally this is used to emulate GYP variable expansion. If you passed the
 argument "--replace=<(foo)=bar" then all instances of "<(foo)" in strings in
 the input will be replaced with "bar":
 
-  gypi_values = exec_script("//build/gypi_to_gn.py",
+  gypi_values = exec_script("//build/common/gypi_to_gn.py",
                             [ rebase_path("your_file.gypi"),
                               "--replace=<(foo)=bar"],
                             "scope",

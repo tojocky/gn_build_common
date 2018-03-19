@@ -7,9 +7,9 @@
 # in the context of the default_toolchain, so we can at least check for that.
 assert(current_toolchain == default_toolchain)
 
-import("//build/config/compiler/compiler.gni")
-import("//build/config/sanitizers/sanitizers.gni")
-import("//build/toolchain/toolchain.gni")
+import("//build/common/config/compiler/compiler.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
+import("//build/common/toolchain/toolchain.gni")
 
 declare_args() {
   # Limit the number of concurrent links; we often want to run fewer

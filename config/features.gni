@@ -9,15 +9,14 @@
 # These flags are effectively global. Your feature flag should go near the
 # code it controls. Most of these items are here now because they control
 # legacy global #defines passed to the compiler (now replaced with generated
-# buildflag headers -- see //build/buildflag_header.gni).
+# buildflag headers -- see //build/common/buildflag_header.gni).
 #
 # There is more advice on where to put build flags in the "Build flag" section
-# of //build/config/BUILDCONFIG.gn.
+# of //build/common/config/BUILDCONFIG.gn.
 
-import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
+import("//build/common/config/chromecast_build.gni")
 if (is_android) {
-  import("//build/config/android/config.gni")
+  import("//build/common/config/android/config.gni")
 }
 
 declare_args() {
@@ -25,7 +24,7 @@ declare_args() {
   # We always build Google Chrome and Chromecast with proprietary codecs.
   #
   # Note: this flag is used by WebRTC which is DEPSed into Chrome. Moving it
-  # out of //build will require using the build_overrides directory.
+  # out of //build/common will require using the build_overrides directory.
   proprietary_codecs = is_chrome_branded || is_chromecast
 
   # Variable safe_browsing is used to control the build time configuration for

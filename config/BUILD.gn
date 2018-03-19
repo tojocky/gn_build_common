@@ -2,25 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/allocator.gni")
-import("//build/config/c++/c++.gni")
-import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
-import("//build/config/crypto.gni")
-import("//build/config/dcheck_always_on.gni")
-import("//build/config/features.gni")
+import("//build/common/config/allocator.gni")
+import("//build/common/config/c++/c++.gni")
+import("//build/common/config/chromecast_build.gni")
+import("//build/common/config/crypto.gni")
+import("//build/common/config/dcheck_always_on.gni")
+import("//build/common/config/features.gni")
 
 # Subprojects need to override arguments in {mac,ios}_sdk_overrides.gni in their
 # .gn config, but those arguments are only used on macOS. Including
 # mac_sdk_overrides.gni insures that this doesn't trigger an unused argument
 # warning.
-import("//build/config/mac/mac_sdk_overrides.gni")
-import("//build/config/ios/ios_sdk_overrides.gni")
+import("//build/common/config/mac/mac_sdk_overrides.gni")
+import("//build/common/config/ios/ios_sdk_overrides.gni")
 
-import("//build/config/pch.gni")
-import("//build/config/sanitizers/sanitizers.gni")
-import("//build/config/ui.gni")
-import("//build/toolchain/goma.gni")
+import("//build/common/config/pch.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
+import("//build/common/config/ui.gni")
+import("//build/common/toolchain/goma.gni")
 
 declare_args() {
   # When set (the default) enables C++ iterator debugging in debug builds.
@@ -50,11 +49,11 @@ declare_args() {
 # and means its definition can participate in the build graph, only recompiling
 # things when it actually changes.
 #
-# See //build/buildflag_header.gni for instructions on generating headers.
+# See //build/common/buildflag_header.gni for instructions on generating headers.
 #
 # This will also allow you to scope your build flag to a BUILD.gn file (or a
 # .gni file if you need it from more than one place) rather than making global
-# flags. See //build/config/BUILDCONFIG.gn for advice on where to define
+# flags. See //build/common/config/BUILDCONFIG.gn for advice on where to define
 # build flags.
 config("feature_flags") {
   # Don't use deprecated V8 APIs anywhere.
@@ -262,17 +261,13 @@ config("default_libs") {
 group("exe_and_shlib_deps") {
   public_deps = []
   if (using_sanitizer) {
-    public_deps += [ "//build/config/sanitizers:deps" ]
+    public_deps += [ "//build/common/config/sanitizers:deps" ]
   }
   if (use_custom_libcxx) {
-    public_deps += [ "//buildtools/third_party/libc++" ]
+    public_deps += [ "//build/commontools/third_party/libc++" ]
   }
   if (use_afl) {
     public_deps += [ "//third_party/afl" ]
-  }
-
-  if (is_win && generate_order_files && !is_nacl) {
-    public_deps += [ "//tools/cygprofile_win" ]
   }
 }
 
@@ -281,8 +276,8 @@ group("exe_and_shlib_deps") {
 # Windows linker setup for EXEs and DLLs.
 if (is_win) {
   _windows_linker_configs = [
-    "//build/config/win:sdk_link",
-    "//build/config/win:common_linker_setup",
+    "//build/common/config/win:sdk_link",
+    "//build/common/config/win:common_linker_setup",
   ]
 }
 
@@ -294,20 +289,20 @@ config("executable_config") {
     configs += _windows_linker_configs
 
     # Currently only turn on linker CFI for executables.
-    configs += [ "//build/config/win:cfi_linker" ]
+    configs += [ "//build/common/config/win:cfi_linker" ]
   } else if (is_mac) {
-    configs += [ "//build/config/mac:mac_dynamic_flags" ]
+    configs += [ "//build/common/config/mac:mac_dynamic_flags" ]
   } else if (is_ios) {
     configs += [
-      "//build/config/ios:ios_dynamic_flags",
-      "//build/config/ios:ios_executable_flags",
+      "//build/common/config/ios:ios_dynamic_flags",
+      "//build/common/config/ios:ios_executable_flags",
     ]
   } else if (is_linux || is_android || current_os == "aix") {
-    configs += [ "//build/config/gcc:executable_ldconfig" ]
+    configs += [ "//build/common/config/gcc:executable_ldconfig" ]
     if (is_android) {
-      configs += [ "//build/config/android:executable_config" ]
+      configs += [ "//build/common/config/android:executable_config" ]
     } else if (is_chromecast) {
-      configs += [ "//build/config/chromecast:executable_config" ]
+      configs += [ "//build/common/config/chromecast:executable_config" ]
     }
   }
 
@@ -319,7 +314,7 @@ config("executable_config") {
   if (use_locally_built_instrumented_libraries) {
     configs += [ "//third_party/instrumented_libraries:locally_built_ldflags" ]
   }
-  configs += [ "//build/config/sanitizers:link_executable" ]
+  configs += [ "//build/common/config/sanitizers:link_executable" ]
 }
 
 # Shared library configs -------------------------------------------------------
@@ -331,11 +326,11 @@ config("shared_library_config") {
   if (is_win) {
     configs += _windows_linker_configs
   } else if (is_mac) {
-    configs += [ "//build/config/mac:mac_dynamic_flags" ]
+    configs += [ "//build/common/config/mac:mac_dynamic_flags" ]
   } else if (is_ios) {
-    configs += [ "//build/config/ios:ios_dynamic_flags" ]
+    configs += [ "//build/common/config/ios:ios_dynamic_flags" ]
   } else if (is_chromecast) {
-    configs += [ "//build/config/chromecast:shared_library_config" ]
+    configs += [ "//build/common/config/chromecast:shared_library_config" ]
   }
 
   # If we're using the prebuilt instrumented libraries with the sanitizers, we
@@ -346,7 +341,7 @@ config("shared_library_config") {
   if (use_locally_built_instrumented_libraries) {
     configs += [ "//third_party/instrumented_libraries:locally_built_ldflags" ]
   }
-  configs += [ "//build/config/sanitizers:link_shared_library" ]
+  configs += [ "//build/common/config/sanitizers:link_shared_library" ]
 }
 
 # Add this config to your target to enable precompiled headers.
@@ -368,12 +363,12 @@ config("precompiled_headers") {
       # This is a file that GN will compile with the above header. It will be
       # implicitly added to the sources (potentially multiple times, with one
       # variant for each language used in the target).
-      precompiled_source = "//build/precompile.cc"
+      precompiled_source = "//build/common/precompile.cc"
 
       # Force include the header.
       cflags = [ "/FI$precompiled_header" ]
     } else if (is_mac) {
-      precompiled_source = "//build/precompile.h"
+      precompiled_source = "//build/common/precompile.h"
     }
   }
 }

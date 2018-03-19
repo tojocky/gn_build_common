@@ -31,9 +31,9 @@ template("syzygy_asan") {
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
     }
-    script = "//build/win/syzygy/instrument.py"
+    script = "//build/common/win/syzygy/instrument.py"
 
-    filter = "//build/win/syzygy/syzyasan-instrumentation-filter.txt"
+    filter = "//build/common/win/syzygy/syzyasan-instrumentation-filter.txt"
 
     binary_name = invoker.binary_name
     dest_dir = invoker.dest_dir
@@ -71,7 +71,7 @@ template("syzygy_asan") {
     ]
 
     deps = [
-      "//build/win/syzygy:copy_syzyasan_binaries",
+      "//build/common/win/syzygy:copy_syzyasan_binaries",
     ]
     if (defined(invoker.deps)) {
       deps += invoker.deps

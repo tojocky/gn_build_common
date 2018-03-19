@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/nacl/config.gni")
+import("//build/common/config/nacl/config.gni")
 
 # Generate a nmf file
 #
@@ -105,7 +105,7 @@ template("generate_nmf") {
         if (current_cpu == "x64" || target_os == "win") {
           # For x86-64, the lib/ directory is called lib64/ instead
           # when copied by create_nmf.py.
-          glibc_tc = "//build/toolchain/nacl:glibc"
+          glibc_tc = "//build/common/toolchain/nacl:glibc"
           assert(current_toolchain == "${glibc_tc}_${current_cpu}")
           if (current_cpu == "x64") {
             x64_out_dir = root_out_dir

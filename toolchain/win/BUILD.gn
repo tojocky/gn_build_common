@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/clang/clang.gni")
-import("//build/config/compiler/compiler.gni")
-import("//build/config/sanitizers/sanitizers.gni")
-import("//build/config/win/visual_studio_version.gni")
-import("//build/toolchain/clang_static_analyzer.gni")
-import("//build/toolchain/goma.gni")
-import("//build/toolchain/toolchain.gni")
+import("//build/common/config/clang/clang.gni")
+import("//build/common/config/compiler/compiler.gni")
+import("//build/common/config/sanitizers/sanitizers.gni")
+import("//build/common/config/win/visual_studio_version.gni")
+import("//build/common/toolchain/clang_static_analyzer.gni")
+import("//build/common/toolchain/goma.gni")
+import("//build/common/toolchain/toolchain.gni")
 
 # Should only be running on Windows.
 assert(is_win)
@@ -109,7 +109,7 @@ template("msvc_toolchain") {
     if (toolchain_uses_clang && use_clang_static_analyzer) {
       analyzer_prefix =
           "$python_path " +
-          rebase_path("//build/toolchain/clang_static_analyzer_wrapper.py",
+          rebase_path("//build/common/toolchain/clang_static_analyzer_wrapper.py",
                       root_build_dir) + " --mode=cl"
       cl = "${analyzer_prefix} ${cl}"
     }
@@ -238,7 +238,7 @@ template("msvc_toolchain") {
       libname = "${dllname}.lib"  # e.g. foo.dll.lib
       pdbname = "${dllname}.pdb"
       rspfile = "${dllname}.rsp"
-      pool = "//build/toolchain:link_pool($default_toolchain)"
+      pool = "//build/common/toolchain:link_pool($default_toolchain)"
 
       command = "$python_path $tool_wrapper_path link-wrapper $env False $link /nologo /IMPLIB:$libname /DLL /OUT:$dllname /PDB:$pdbname @$rspfile"
 
@@ -271,7 +271,7 @@ template("msvc_toolchain") {
       dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"  # e.g. foo.dll
       pdbname = "${dllname}.pdb"
       rspfile = "${dllname}.rsp"
-      pool = "//build/toolchain:link_pool($default_toolchain)"
+      pool = "//build/common/toolchain:link_pool($default_toolchain)"
 
       command = "$python_path $tool_wrapper_path link-wrapper $env False $link /nologo /DLL /OUT:$dllname /PDB:$pdbname @$rspfile"
 
@@ -295,7 +295,7 @@ template("msvc_toolchain") {
       exename = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
       pdbname = "$exename.pdb"
       rspfile = "$exename.rsp"
-      pool = "//build/toolchain:link_pool($default_toolchain)"
+      pool = "//build/common/toolchain:link_pool($default_toolchain)"
 
       command = "$python_path $tool_wrapper_path link-wrapper $env False $link /nologo /OUT:$exename /PDB:$pdbname @$rspfile"
 
@@ -332,20 +332,20 @@ template("msvc_toolchain") {
 
     # These two are really entirely generic, but have to be repeated in
     # each toolchain because GN doesn't allow a template to be used here.
-    # See //build/toolchain/toolchain.gni for details.
+    # See //build/common/toolchain/toolchain.gni for details.
     tool("stamp") {
       command = stamp_command
       description = stamp_description
-      pool = "//build/toolchain:action_pool($default_toolchain)"
+      pool = "//build/common/toolchain:action_pool($default_toolchain)"
     }
     tool("copy") {
       command = copy_command
       description = copy_description
-      pool = "//build/toolchain:action_pool($default_toolchain)"
+      pool = "//build/common/toolchain:action_pool($default_toolchain)"
     }
 
     tool("action") {
-      pool = "//build/toolchain:action_pool($default_toolchain)"
+      pool = "//build/common/toolchain:action_pool($default_toolchain)"
     }
   }
 }

@@ -5,15 +5,13 @@
 # This header file defines the "sysroot" variable which is the absolute path
 # of the sysroot. If no sysroot applies, the variable will be an empty string.
 
-import("//build/config/chrome_build.gni")
-
 declare_args() {
   # The absolute path of the sysroot that is applied when compiling using
   # the target toolchain.
   target_sysroot = ""
 
   # The absolute path to directory containing linux sysroot images
-  target_sysroot_dir = "//build/linux"
+  target_sysroot_dir = "//build/common/linux"
 
   use_sysroot = current_cpu == "x86" || current_cpu == "x64" ||
                 current_cpu == "arm" || current_cpu == "arm64" ||
@@ -24,7 +22,7 @@ if (current_os == target_os && current_cpu == target_cpu &&
     target_sysroot != "") {
   sysroot = target_sysroot
 } else if (is_android) {
-  import("//build/config/android/config.gni")
+  import("//build/common/config/android/config.gni")
 
   # Android uses unified headers, and thus a single compile time sysroot
   sysroot = "$android_ndk_root/sysroot"
@@ -55,19 +53,19 @@ if (current_os == target_os && current_cpu == target_cpu &&
       _script_arch = "amd64"
     }
     assert(
-        exec_script("//build/dir_exists.py",
+        exec_script("//build/common/dir_exists.py",
                     [ rebase_path(sysroot) ],
                     "string") == "True",
         "Missing sysroot ($sysroot). To fix, run: build/linux/sysroot_scripts/install-sysroot.py --arch=$_script_arch")
   }
 } else if (is_mac) {
-  import("//build/config/mac/mac_sdk.gni")
+  import("//build/common/config/mac/mac_sdk.gni")
   sysroot = mac_sdk_path
 } else if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
+  import("//build/common/config/ios/ios_sdk.gni")
   sysroot = ios_sdk_path
 } else if (is_fuchsia) {
-  import("//build/config/fuchsia/config.gni")
+  import("//build/common/config/fuchsia/config.gni")
   if (current_cpu == "arm64") {
     sysroot = fuchsia_sdk + "/sysroot/aarch64-fuchsia"
   } else if (current_cpu == "x64") {
