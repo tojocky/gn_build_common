@@ -5,18 +5,10 @@
 import("//build/common/config/android/config.gni")
 import("//build/common/config/clang/clang.gni")
 import("//build/common/config/sanitizers/sanitizers.gni")
-import("//build/common/config/v8_target_cpu.gni")
 import("//build/common/toolchain/cc_wrapper.gni")
 import("//build/common/toolchain/clang_static_analyzer.gni")
 import("//build/common/toolchain/goma.gni")
 import("//build/common/toolchain/toolchain.gni")
-
-if (is_nacl) {
-  # To keep NaCl variables out of builds that don't include NaCl, all
-  # variables defined in nacl/config.gni referenced here should be protected by
-  # is_nacl conditions.
-  import("//build/common/config/nacl/config.gni")
-}
 
 # Path to the Clang static analysis wrapper script.
 # REVIEWERS: can you suggest a better location for this?
@@ -124,10 +116,6 @@ template("gcc_toolchain") {
       # ensure that it's always the same, regardless of the values that may be
       # set on those toolchains.
       host_toolchain = host_toolchain
-
-      if (!defined(invoker_toolchain_args.v8_current_cpu)) {
-        v8_current_cpu = invoker_toolchain_args.current_cpu
-      }
     }
 
     # When the invoker has explicitly overridden use_goma or cc_wrapper in the
@@ -330,8 +318,7 @@ template("gcc_toolchain") {
       }
 
       # This needs a Python script to avoid using simple sh features in this
-      # command, in case the host does not use a POSIX shell (e.g. compiling
-      # POSIX-like toolchains such as NaCl on Windows).
+      # command, in case the host does not use a POSIX shell.
       ar_wrapper =
           rebase_path("//build/common/toolchain/gcc_ar_wrapper.py", root_build_dir)
       if (current_os == "aix") {

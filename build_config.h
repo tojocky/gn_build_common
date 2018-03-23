@@ -5,7 +5,6 @@
 // This file adds defines about the platform we're currently building on.
 //  Operating System:
 //    OS_WIN / OS_MACOSX / OS_LINUX / OS_POSIX (MACOSX or LINUX) /
-//    OS_NACL (NACL_SFI or NACL_NONSFI) / OS_NACL_SFI / OS_NACL_NONSFI
 //    OS_CHROMEOS is set by the build system
 //  Compiler:
 //    COMPILER_MSVC / COMPILER_GCC
@@ -17,18 +16,7 @@
 #define BUILD_BUILD_CONFIG_H_
 
 // A set of macros to use for platform detection.
-#if defined(__native_client__)
-// __native_client__ must be first, so that other OS_ defines are not set.
-#define OS_NACL 1
-// OS_NACL comes in two sandboxing technology flavors, SFI or Non-SFI.
-// PNaCl toolchain defines __native_client_nonsfi__ macro in Non-SFI build
-// mode, while it does not in SFI build mode.
-#if defined(__native_client_nonsfi__)
-#define OS_NACL_NONSFI
-#else
-#define OS_NACL_SFI
-#endif
-#elif defined(ANDROID)
+#if defined(ANDROID)
 #define OS_ANDROID 1
 #elif defined(__APPLE__)
 // only include TargetConditions after testing ANDROID as some android builds
@@ -54,7 +42,7 @@
 #elif defined(__FreeBSD__)
 #define OS_FREEBSD 1
 #elif defined(__NetBSD__)
-#define OS_NETBSD 1
+#define OS_NEFTBSD 1
 #elif defined(__OpenBSD__)
 #define OS_OPENBSD 1
 #elif defined(__sun)
@@ -81,7 +69,7 @@
 // more specific macro.
 #if defined(OS_AIX) || defined(OS_ANDROID) || defined(OS_ASMJS) ||     \
     defined(OS_FREEBSD) || defined(OS_FUCHSIA) || defined(OS_LINUX) || \
-    defined(OS_MACOSX) || defined(OS_NACL) || defined(OS_NETBSD) ||    \
+    defined(OS_MACOSX) || defined(OS_NETBSD) ||    \
     defined(OS_OPENBSD) || defined(OS_QNX) || defined(OS_SOLARIS)
 #define OS_POSIX 1
 #endif
@@ -144,9 +132,6 @@
 #define ARCH_CPU_ARM_FAMILY 1
 #define ARCH_CPU_ARM64 1
 #define ARCH_CPU_64_BITS 1
-#define ARCH_CPU_LITTLE_ENDIAN 1
-#elif defined(__pnacl__) || defined(__asmjs__)
-#define ARCH_CPU_32_BITS 1
 #define ARCH_CPU_LITTLE_ENDIAN 1
 #elif defined(__MIPSEL__)
 #if defined(__LP64__)

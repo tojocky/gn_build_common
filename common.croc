@@ -65,11 +65,6 @@
       'regexp' : '.*/third_party/',
       'include' : 0,
     },
-    # We don't run the V8 test suite, so we don't care about V8 coverage.
-    {
-      'regexp' : '.*/v8/',
-      'include' : 0,
-    },
   ],
 
   # Paths to add source from

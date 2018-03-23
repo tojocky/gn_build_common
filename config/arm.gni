@@ -2,14 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/common/config/v8_target_cpu.gni")
 import("//build/common/secondary/third_party/catapult/devil/devil_arm.gni")
 
 # These are primarily relevant in current_cpu == "arm" contexts, where
 # ARM code is being compiled.  But they can also be relevant in the
 # other contexts when the code will change its behavior based on the
 # cpu it wants to generate code for.
-if (current_cpu == "arm" || v8_current_cpu == "arm") {
+if (current_cpu == "arm") {
   declare_args() {
     # Version of the ARM processor when compiling on ARM. Ignored on non-ARM
     # platforms.
@@ -48,12 +47,7 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
          arm_float_abi == "soft" || arm_float_abi == "softfp")
 
   if (arm_use_neon == "") {
-    if (current_os == "linux" && target_cpu != v8_target_cpu) {
-      # Don't use neon on V8 simulator builds as a default.
-      arm_use_neon = false
-    } else {
-      arm_use_neon = true
-    }
+    arm_use_neon = true
   }
 
   if (arm_version == 6) {
@@ -89,9 +83,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
         } else {
           arm_float_abi = "softfp"
         }
-      } else if (current_os == "linux" && target_cpu != v8_target_cpu) {
-        # Default to the same as Android for V8 simulator builds.
-        arm_float_abi = "softfp"
       } else {
         arm_float_abi = "hard"
       }
@@ -128,7 +119,7 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
       }
     }
   }
-} else if (current_cpu == "arm64" || v8_current_cpu == "arm64") {
+} else if (current_cpu == "arm64") {
   # arm64 supports only "hard".
   arm_float_abi = "hard"
   arm_use_neon = true

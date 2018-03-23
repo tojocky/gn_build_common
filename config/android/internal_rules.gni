@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 # Do not add any imports to non-//build/common directories here.
-# Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
 import("//build/common_overrides/build.gni")
 import("//build/common/config/android/config.gni")
 import("//build/common/config/dcheck_always_on.gni")

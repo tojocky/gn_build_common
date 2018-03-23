@@ -27,12 +27,6 @@ if (is_mac) {
 if (is_ios) {
   import("//build/common/config/ios/ios_sdk.gni")
 }
-if (is_nacl) {
-  # To keep NaCl variables out of builds that don't include NaCl, all
-  # variables defined in nacl/config.gni referenced here should be protected by
-  # is_nacl conditions.
-  import("//build/common/config/nacl/config.gni")
-}
 
 declare_args() {
   # Default to warnings as errors for default workflow, where we catch
@@ -134,7 +128,7 @@ declare_args() {
   # lld doesn't have the bug.
   use_icf =
       is_posix && !using_sanitizer && !(is_android && use_order_profiling) &&
-      ((use_lld && !is_nacl) ||
+      ((use_lld) ||
        (use_gold &&
         ((!is_android && linux_use_bundled_binutils) || is_chromeos ||
          !(current_cpu == "x86" || current_cpu == "x64"))))
@@ -195,8 +189,6 @@ config("compiler") {
     configs += [ "//build/common/config/android:compiler" ]
   } else if (is_linux) {
     configs += [ "//build/common/config/linux:compiler" ]
-  } else if (is_nacl) {
-    configs += [ "//build/common/config/nacl:compiler" ]
   } else if (is_mac) {
     configs += [ "//build/common/config/mac:compiler" ]
   } else if (is_ios) {
@@ -230,7 +222,7 @@ config("compiler") {
       } else {
         cflags += [ "-fstack-protector" ]
       }
-    } else if (is_posix && !is_chromeos && !is_nacl) {
+    } else if (is_posix && !is_chromeos) {
       # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
       # See also https://crbug.com/533294
       cflags += [ "--param=ssp-buffer-size=4" ]
@@ -313,16 +305,14 @@ config("compiler") {
       ]
     }
 
-    if (!is_nacl) {
-      if (exclude_unwind_tables) {
-        cflags += [
-          "-fno-unwind-tables",
-          "-fno-asynchronous-unwind-tables",
-        ]
-        defines += [ "NO_UNWIND_TABLES" ]
-      } else {
-        cflags += [ "-funwind-tables" ]
-      }
+    if (exclude_unwind_tables) {
+      cflags += [
+        "-fno-unwind-tables",
+        "-fno-asynchronous-unwind-tables",
+      ]
+      defines += [ "NO_UNWIND_TABLES" ]
+    } else {
+      cflags += [ "-funwind-tables" ]
     }
   }
 
@@ -348,7 +338,7 @@ config("compiler") {
       # Functions interposed by the sanitizers can make ld think
       # that some libraries aren't needed when they actually are,
       # http://crbug.com/234010. As workaround, disable --as-needed.
-      if (!is_nacl && !is_android) {
+      if (!is_android) {
         # TODO(pcc): Fix linker bug which requires us to link pthread
         # unconditionally here (crbug.com/623236).
         ldflags += [
@@ -370,7 +360,7 @@ config("compiler") {
     ldflags += [ "--gcc-toolchain=$_rebased_android_toolchain_root" ]
   }
 
-  if (is_posix && use_lld && !is_nacl) {
+  if (is_posix && use_lld) {
     ldflags += [ "-fuse-ld=lld" ]
     if (current_cpu == "arm64") {
       # Reduce the page size from 65536 in order to reduce binary size slightly
@@ -434,7 +424,7 @@ config("compiler") {
 
   # TODO(hans): Remove this once Clang generates better optimized debug info by
   # default. https://crbug.com/765793
-  if (is_clang && !is_nacl && current_toolchain == host_toolchain &&
+  if (is_clang && current_toolchain == host_toolchain &&
       target_os != "chromeos") {
     cflags += [
       "-Xclang",
@@ -453,9 +443,7 @@ config("compiler") {
 
   # Makes builds independent of absolute file path.
   # clang-cl (used if is_win) doesn't expose this flag.
-  # Currently disabled for nacl since its toolchain lacks this flag (too old).
-  # TODO(zforman): Once nacl's toolchain is updated, remove check.
-  if (is_clang && !is_nacl && !is_win && !is_mac && !is_ios &&
+  if (is_clang && !is_win && !is_mac && !is_ios &&
       strip_absolute_paths_from_debug_symbols) {
     # This is resolved to path like "$HOME/chromium/src/out/Release".
     # If debug option is given, clang includes $cwd in debug info.
@@ -476,13 +464,13 @@ config("compiler") {
   #
   # TODO(thakis): Figure out if this should be the default, and expose in
   # clang-cl if not.
-  if (is_clang && !is_win && !is_nacl) {
+  if (is_clang && !is_win) {
     cflags += [ "-no-canonical-prefixes" ]
   }
 
   # C11/C++11 compiler flags setup.
   # ---------------------------
-  if (is_linux || is_android || (is_nacl && is_clang) || current_os == "aix") {
+  if (is_linux || is_android || current_os == "aix") {
     if (target_os == "android") {
       cxx11_override = use_cxx11_on_android
     } else {
@@ -500,17 +488,13 @@ config("compiler") {
     } else {
       cflags_cc += [ "-std=gnu++14" ]
     }
-  } else if (!is_win && !is_nacl) {
+  } else if (!is_win) {
     if (target_os == "android") {
       cxx11_override = use_cxx11_on_android
     } else {
       cxx11_override = use_cxx11
     }
 
-    # TODO(mcgrathr) - the NaCl GCC toolchain doesn't support either gnu11/gnu++11
-    # or c11/c++11; we technically don't need this toolchain any more, but there
-    # are still a few buildbots using it, so until those are turned off
-    # we need the !is_nacl clause and the (is_nacl && is_clang) clause, above.
     cflags_c += [ "-std=c11" ]
     if (cxx11_override) {
       cflags_cc += [ "-std=c++11" ]
@@ -633,33 +617,29 @@ config("compiler_cpu_abi") {
     } else if (current_cpu == "x86") {
       cflags += [ "-m32" ]
       ldflags += [ "-m32" ]
-      if (!is_nacl) {
-        cflags += [
-          "-msse2",
-          "-mfpmath=sse",
-          "-mmmx",
-        ]
-      }
+      cflags += [
+        "-msse2",
+        "-mfpmath=sse",
+        "-mmmx",
+      ]
     } else if (current_cpu == "arm") {
-      if (is_clang && !is_android && !is_nacl) {
+      if (is_clang && !is_android) {
         cflags += [ "--target=arm-linux-gnueabihf" ]
         ldflags += [ "--target=arm-linux-gnueabihf" ]
       }
-      if (!is_nacl) {
-        cflags += [
-          "-march=$arm_arch",
-          "-mfloat-abi=$arm_float_abi",
-        ]
-      }
+      cflags += [
+        "-march=$arm_arch",
+        "-mfloat-abi=$arm_float_abi",
+      ]
       if (arm_tune != "") {
         cflags += [ "-mtune=$arm_tune" ]
       }
     } else if (current_cpu == "arm64") {
-      if (is_clang && !is_android && !is_nacl && !is_fuchsia) {
+      if (is_clang && !is_android && !is_fuchsia) {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
       }
-    } else if (current_cpu == "mipsel" && !is_nacl) {
+    } else if (current_cpu == "mipsel") {
       if (custom_toolchain == "") {
         if (is_clang) {
           if (is_android) {
@@ -743,7 +723,7 @@ config("compiler_cpu_abi") {
       }
 
       cflags += [ "-m${mips_float_abi}-float" ]
-    } else if (current_cpu == "mips" && !is_nacl) {
+    } else if (current_cpu == "mips") {
       if (custom_toolchain == "") {
         if (is_clang) {
           cflags += [ "--target=mips-linux-gnu" ]
@@ -886,57 +866,6 @@ config("compiler_cpu_abi") {
         ]
         ldflags += [ "-mips64r2" ]
       }
-    } else if (current_cpu == "pnacl" && is_nacl_nonsfi) {
-      if (target_cpu == "x86" || target_cpu == "x64") {
-        cflags += [
-          "-arch",
-          "x86-32-nonsfi",
-          "--pnacl-bias=x86-32-nonsfi",
-          "--target=i686-unknown-nacl",
-        ]
-        ldflags += [
-          "-arch",
-          "x86-32-nonsfi",
-          "--target=i686-unknown-nacl",
-        ]
-      } else if (target_cpu == "arm") {
-        cflags += [
-          "-arch",
-          "arm-nonsfi",
-          "-mfloat-abi=hard",
-          "--pnacl-bias=arm-nonsfi",
-          "--target=armv7-unknown-nacl-gnueabihf",
-        ]
-        ldflags += [
-          "-arch",
-          "arm-nonsfi",
-          "--target=armv7-unknown-nacl-gnueabihf",
-        ]
-      }
-    } else if (current_cpu == "ppc64") {
-      if (v8_current_cpu == "ppc") {
-        cflags += [ "-m32" ]
-        ldflags += [ "-m32" ]
-      } else if (v8_current_cpu == "ppc64") {
-        if (current_os == "aix") {
-          cflags += [ "-maix64" ]
-          ldflags += [ "-maix64" ]
-        } else {
-          cflags += [ "-m64" ]
-          ldflags += [ "-m64" ]
-        }
-      }
-    } else if (current_cpu == "s390x") {
-      if (v8_current_cpu == "s390" && host_byteorder == "little") {
-        cflags += [ "-m32" ]
-        ldflags += [ "-m32" ]
-      } else if (v8_current_cpu == "s390") {
-        cflags += [ "-m31" ]
-        ldflags += [ "-m31" ]
-      } else if (v8_current_cpu == "s390x") {
-        cflags += [ "-m64" ]
-        ldflags += [ "-m64" ]
-      }
     }
   }
 
@@ -950,9 +879,7 @@ config("compiler_codegen") {
   configs = []
   cflags = []
 
-  if (is_nacl) {
-    configs += [ "//build/common/config/nacl:compiler_codegen" ]
-  } else if (is_posix && !is_mac && !is_ios) {
+  if (is_posix && !is_mac && !is_ios) {
     if (current_cpu == "x86") {
       if (is_clang) {
         cflags += [
@@ -1019,7 +946,7 @@ config("clang_revision") {
 }
 
 config("compiler_arm_fpu") {
-  if (current_cpu == "arm" && !is_ios && !is_nacl) {
+  if (current_cpu == "arm" && !is_ios) {
     cflags = [ "-mfpu=$arm_fpu" ]
     asmflags = cflags
   }
@@ -1027,7 +954,7 @@ config("compiler_arm_fpu") {
 
 config("compiler_arm_thumb") {
   if (current_cpu == "arm" && arm_use_thumb && is_posix &&
-      !(is_mac || is_ios || is_nacl)) {
+      !(is_mac || is_ios)) {
     cflags = [ "-mthumb" ]
     if (is_android && !is_clang) {
       # Clang doesn't support this option.
@@ -1237,7 +1164,7 @@ config("default_warnings") {
       ]
     }
   } else {
-    if ((is_mac || is_ios) && !is_nacl) {
+    if (is_mac || is_ios) {
       # When compiling Objective-C, warns if a method is used whose
       # availability is newer than the deployment target.
       cflags += [ "-Wunguarded-availability" ]
@@ -1315,9 +1242,7 @@ config("default_warnings") {
 
     # use_xcode_clang only refers to the iOS toolchain, host binaries use
     # chromium's clang always.
-    if (!is_nacl && (!use_xcode_clang || current_toolchain == host_toolchain)) {
-      # Flags NaCl (Clang 3.7) and Xcode 7.3 (Clang clang-703.0.31) do not
-      # recognize.
+    if (!use_xcode_clang || current_toolchain == host_toolchain) {
       cflags += [
         # TODO(thakis): https://crbug.com/604888
         "-Wno-undefined-var-template",
@@ -1443,8 +1368,7 @@ config("no_chromium_code") {
       cflags += [ "-Werror" ]
       ldflags = [ "-Werror" ]
     }
-    if (is_clang && !is_nacl) {
-      # TODO(thakis): Remove !is_nacl once
+    if (is_clang) {
       # https://codereview.webrtc.org/1552863002/ made its way into chromium.
       cflags += [ "-Wall" ]
     }
@@ -1466,9 +1390,7 @@ config("no_chromium_code") {
 # Allows turning -Wshadow on.
 
 config("noshadowing") {
-  # This flag has to be disabled for nacl because the nacl compiler is too
-  # strict about shadowing.
-  if (is_clang && !is_nacl) {
+  if (is_clang) {
     cflags = [ "-Wshadow" ]
   }
 }
@@ -1723,9 +1645,8 @@ config("optimize") {
     # Favor size over speed, /O1 must be before the common flags. The GYP
     # build also specifies /Os and /GF but these are implied by /O1.
     cflags = [ "/O1" ] + common_optimize_on_cflags + [ "/Oi" ]
-  } else if (optimize_for_size && !is_nacl) {
+  } else if (optimize_for_size) {
     # Favor size over speed.
-    # TODO(crbug.com/718650): Fix -Os in PNaCl compiler and remove the is_nacl
     # guard above.
     if (is_clang) {
       cflags = [ "-Oz" ] + common_optimize_on_cflags
@@ -1744,9 +1665,8 @@ config("optimize_no_wpo") {
     # Favor size over speed, /O1 must be before the common flags. The GYP
     # build also specifies /Os and /GF but these are implied by /O1.
     cflags = [ "/O1" ] + common_optimize_on_cflags + [ "/Oi" ]
-  } else if (optimize_for_size && !is_nacl) {
+  } else if (optimize_for_size) {
     # Favor size over speed.
-    # TODO(crbug.com/718650): Fix -Os in PNaCl compiler and remove the is_nacl
     # guard above.
     if (is_clang) {
       cflags = [ "-Oz" ] + common_optimize_on_cflags
@@ -1787,42 +1707,30 @@ config("no_optimize") {
 # optimization and link-time code generation which is very expensive and should
 # be used sparingly.
 config("optimize_max") {
-  if (is_nacl && is_nacl_irt) {
-    # The NaCl IRT is a special case and always wants its own config.
-    # Various components do:
-    #   if (!is_debug) {
-    #     configs -= [ "//build/common/config/compiler:default_optimization" ]
-    #     configs += [ "//build/common/config/compiler:optimize_max" ]
-    #   }
-    # So this config has to have the selection logic just like
-    # "default_optimization", below.
-    configs = [ "//build/common/config/nacl:irt_optimize" ]
-  } else {
-    ldflags = common_optimize_on_ldflags
-    if (is_win) {
-      # Favor speed over size, /O2 must be before the common flags. The GYP
-      # build also specifies /Ot, /Oi, and /GF, but these are implied by /O2.
-      cflags = [ "/O2" ] + common_optimize_on_cflags
+  ldflags = common_optimize_on_ldflags
+  if (is_win) {
+    # Favor speed over size, /O2 must be before the common flags. The GYP
+    # build also specifies /Ot, /Oi, and /GF, but these are implied by /O2.
+    cflags = [ "/O2" ] + common_optimize_on_cflags
 
-      if (is_official_build) {
-        if (!is_clang) {
-          cflags += [
-            "/GL",  # Whole program optimization.
+    if (is_official_build) {
+      if (!is_clang) {
+        cflags += [
+          "/GL",  # Whole program optimization.
 
-            # Disable Warning 4702 ("Unreachable code") for the WPO/PGO builds.
-            # Probably anything that this would catch that wouldn't be caught
-            # in a normal build isn't going to actually be a bug, so the
-            # incremental value of C4702 for PGO builds is likely very small.
-            "/wd4702",
-          ]
-        }
-        # TODO(crbug.com/598772): Enable -flto for Clang.
+          # Disable Warning 4702 ("Unreachable code") for the WPO/PGO builds.
+          # Probably anything that this would catch that wouldn't be caught
+          # in a normal build isn't going to actually be a bug, so the
+          # incremental value of C4702 for PGO builds is likely very small.
+          "/wd4702",
+        ]
       }
-    } else if (optimize_for_fuzzing) {
-      cflags = [ "-O1" ] + common_optimize_on_cflags
-    } else {
-      cflags = [ "-O2" ] + common_optimize_on_cflags
+      # TODO(crbug.com/598772): Enable -flto for Clang.
     }
+  } else if (optimize_for_fuzzing) {
+    cflags = [ "-O1" ] + common_optimize_on_cflags
+  } else {
+    cflags = [ "-O2" ] + common_optimize_on_cflags
   }
 }
 
@@ -1834,40 +1742,28 @@ config("optimize_max") {
 # TODO(crbug.com/621335) - rework how all of these configs are related
 # so that we don't need this disclaimer.
 config("optimize_speed") {
-  if (is_nacl && is_nacl_irt) {
-    # The NaCl IRT is a special case and always wants its own config.
-    # Various components do:
-    #   if (!is_debug) {
-    #     configs -= [ "//build/common/config/compiler:default_optimization" ]
-    #     configs += [ "//build/common/config/compiler:optimize_max" ]
-    #   }
-    # So this config has to have the selection logic just like
-    # "default_optimization", below.
-    configs = [ "//build/common/config/nacl:irt_optimize" ]
-  } else {
-    ldflags = common_optimize_on_ldflags
-    if (is_win) {
-      # Favor speed over size, /O2 must be before the common flags. The GYP
-      # build also specifies /Ot, /Oi, and /GF, but these are implied by /O2.
-      cflags = [ "/O2" ] + common_optimize_on_cflags
+  ldflags = common_optimize_on_ldflags
+  if (is_win) {
+    # Favor speed over size, /O2 must be before the common flags. The GYP
+    # build also specifies /Ot, /Oi, and /GF, but these are implied by /O2.
+    cflags = [ "/O2" ] + common_optimize_on_cflags
 
-      # TODO(thakis): Remove is_clang here, https://crbug.com/598772
-      if (is_official_build && !is_clang) {
-        cflags += [
-          "/GL",  # Whole program optimization.
+    # TODO(thakis): Remove is_clang here, https://crbug.com/598772
+    if (is_official_build && !is_clang) {
+      cflags += [
+        "/GL",  # Whole program optimization.
 
-          # Disable Warning 4702 ("Unreachable code") for the WPO/PGO builds.
-          # Probably anything that this would catch that wouldn't be caught in a
-          # normal build isn't going to actually be a bug, so the incremental
-          # value of C4702 for PGO builds is likely very small.
-          "/wd4702",
-        ]
-      }
-    } else if (optimize_for_fuzzing) {
-      cflags = [ "-O1" ] + common_optimize_on_cflags
-    } else {
-      cflags = [ "-O3" ] + common_optimize_on_cflags
+        # Disable Warning 4702 ("Unreachable code") for the WPO/PGO builds.
+        # Probably anything that this would catch that wouldn't be caught in a
+        # normal build isn't going to actually be a bug, so the incremental
+        # value of C4702 for PGO builds is likely very small.
+        "/wd4702",
+      ]
     }
+  } else if (optimize_for_fuzzing) {
+    cflags = [ "-O1" ] + common_optimize_on_cflags
+  } else {
+    cflags = [ "-O3" ] + common_optimize_on_cflags
   }
 }
 
@@ -1880,11 +1776,7 @@ config("optimize_fuzzing") {
 # The default optimization applied to all targets. This will be equivalent to
 # either "optimize" or "no_optimize", depending on the build flags.
 config("default_optimization") {
-  if (is_nacl && is_nacl_irt) {
-    # The NaCl IRT is a special case and always wants its own config.
-    # It gets optimized the same way regardless of the type of build.
-    configs = [ "//build/common/config/nacl:irt_optimize" ]
-  } else if (is_debug) {
+  if (is_debug) {
     configs = [ ":no_optimize" ]
   } else if (optimize_for_fuzzing) {
     assert(!is_win, "Fuzzing optimize level not supported on Windows")
@@ -2008,18 +1900,13 @@ config("symbols") {
       }
       cflags += [ "-g2" ]
     }
-    if (use_debug_fission && !is_nacl) {
+    if (use_debug_fission) {
       cflags += [ "-gsplit-dwarf" ]
     }
     asmflags = cflags
     ldflags = []
 
-    # TODO(thakis): Figure out if there's a way to make this go for 32-bit,
-    # currently we get "warning:
-    # obj/native_client/src/trusted/service_runtime/sel_asm/nacl_switch_32.o:
-    # DWARF info may be corrupt; offsets in a range list entry are in different
-    # sections" there.  Maybe just a bug in nacl_switch_32.S.
-    if (!is_mac && !is_ios && !is_nacl && target_cpu != "x86" &&
+    if (!is_mac && !is_ios && target_cpu != "x86" &&
         (use_gold || use_lld)) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,

@@ -80,13 +80,8 @@ const char *kAsanDefaultOptions =
 #endif  // OS_LINUX
 
 #if defined(OS_LINUX) || defined(OS_MACOSX)
-// Allow NaCl to override the default asan options.
-extern const char* kAsanDefaultOptionsNaCl;
-__attribute__((weak)) const char* kAsanDefaultOptionsNaCl = nullptr;
 
 SANITIZER_HOOK_ATTRIBUTE const char *__asan_default_options() {
-  if (kAsanDefaultOptionsNaCl)
-    return kAsanDefaultOptionsNaCl;
   return kAsanDefaultOptions;
 }
 

@@ -33,7 +33,7 @@ build_dir() {
 
   cd "$CHROME_SRC_DIR/$1" || fail $1
   # Redirect error messages so they aren't seen because they are almost always
-  # errors about components that you just happen to have not built (NaCl, for
+  # errors about components that you just happen to have not built (..., for
   # example).
   $(ctags_cmd "$extraexcludes") 2> /dev/null || fail $1
   mv -f .tmp_tags tags

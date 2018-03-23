@@ -27,7 +27,6 @@ build_dotfile_settings = {
     "//build/common/toolchain/BUILD.gn",
     "//build/common/toolchain/concurrent_links.gni",
     "//build/common/toolchain/mac/BUILD.gn",
-    "//build/common/toolchain/nacl/BUILD.gn",
     "//build/common/toolchain/toolchain.gni",
     "//build/common/toolchain/win/BUILD.gn",
     "//build/common/util/branding.gni",

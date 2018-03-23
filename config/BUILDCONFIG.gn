@@ -28,7 +28,7 @@
 # represents the computer doing the compile and never changes. The "target"
 # represents the main thing we're trying to build. The "current" represents
 # which configuration is currently being defined, which can be either the
-# host, the target, or something completely different (like nacl). GN will
+# host, the target, or something completely different. GN will
 # run the same build file multiple times for the different required
 # configuration in the same build.
 #
@@ -293,7 +293,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = false
   is_linux = false
   is_mac = false
-  is_nacl = false
   is_posix = false
   is_win = true
 } else if (current_os == "mac") {
@@ -303,7 +302,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = false
   is_linux = false
   is_mac = true
-  is_nacl = false
   is_posix = true
   is_win = false
 } else if (current_os == "android") {
@@ -313,7 +311,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = false
   is_linux = false
   is_mac = false
-  is_nacl = false
   is_posix = true
   is_win = false
 } else if (current_os == "chromeos") {
@@ -323,20 +320,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = false
   is_linux = true
   is_mac = false
-  is_nacl = false
-  is_posix = true
-  is_win = false
-} else if (current_os == "nacl") {
-  # current_os == "nacl" will be passed by the nacl toolchain definition.
-  # It is not set by default or on the command line. We treat is as a
-  # Posix variant.
-  is_android = false
-  is_chromeos = false
-  is_fuchsia = false
-  is_ios = false
-  is_linux = false
-  is_mac = false
-  is_nacl = true
   is_posix = true
   is_win = false
 } else if (current_os == "fuchsia") {
@@ -346,7 +329,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = false
   is_linux = false
   is_mac = false
-  is_nacl = false
   is_posix = true
   is_win = false
 } else if (current_os == "ios") {
@@ -356,7 +338,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = true
   is_linux = false
   is_mac = false
-  is_nacl = false
   is_posix = true
   is_win = false
 } else if (current_os == "linux") {
@@ -366,7 +347,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = false
   is_linux = true
   is_mac = false
-  is_nacl = false
   is_posix = true
   is_win = false
 } else if (current_os == "aix") {
@@ -376,7 +356,6 @@ if (current_os == "win" || current_os == "winrt_81" ||
   is_ios = false
   is_linux = false
   is_mac = false
-  is_nacl = false
   is_posix = true
   is_win = false
 }
@@ -567,9 +546,8 @@ if (is_win) {
       [ "//build/common/config/win:default_cygprofile_instrumentation" ]
 }
 
-if (is_clang && !is_nacl) {
+if (is_clang) {
   default_compiler_configs += [
-    "//build/common/config/clang:find_bad_constructs",
     "//build/common/config/clang:extra_warnings",
   ]
 }
