@@ -29,7 +29,7 @@ declare_args() {
 # check that current_toolchain is default_toolchain, and the file should
 # assert that current_os is "mac" once this file is no longer included by
 # iOS toolchains.
-_verify_sdk = is_chrome_branded && is_official_build && target_os != "ios"
+_verify_sdk = is_official_build && target_os != "ios"
 
 find_sdk_args = [ "--print_sdk_path" ]
 if (!use_system_xcode) {

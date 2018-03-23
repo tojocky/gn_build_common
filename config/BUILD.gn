@@ -117,19 +117,11 @@ config("feature_flags") {
   if (is_official_build) {
     defines += [ "OFFICIAL_BUILD" ]
   }
-  if (is_chrome_branded) {
-    defines += [ "GOOGLE_CHROME_BUILD" ]
-  } else {
-    defines += [ "CHROMIUM_BUILD" ]
-  }
   if (is_syzyasan) {
     defines += [
       "SYZYASAN",
       "MEMORY_SANITIZER_INITIAL_SIZE",
     ]
-  }
-  if (!fieldtrial_testing_like_official_build && !is_chrome_branded) {
-    defines += [ "FIELDTRIAL_TESTING_ENABLED" ]
   }
 
   # ==============================================
