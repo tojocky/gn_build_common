@@ -8,7 +8,7 @@
 declare_args() {
   # The absolute path of the sysroot that is applied when compiling using
   # the target toolchain.
-  target_sysroot = ""
+  target_sysroot = "/usr"
 
   # The absolute path to directory containing linux sysroot images
   target_sysroot_dir = "//build/common/linux"
@@ -56,7 +56,7 @@ if (current_os == target_os && current_cpu == target_cpu &&
         exec_script("//build/common/dir_exists.py",
                     [ rebase_path(sysroot) ],
                     "string") == "True",
-        "Missing sysroot ($sysroot). To fix, run: build/linux/sysroot_scripts/install-sysroot.py --arch=$_script_arch")
+        "Missing sysroot ($sysroot). To fix, run: build/common/linux/sysroot_scripts/install-sysroot.py --arch=$_script_arch")
   }
 } else if (is_mac) {
   import("//build/common/config/mac/mac_sdk.gni")

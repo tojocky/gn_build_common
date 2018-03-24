@@ -11,7 +11,6 @@ import("//build/common/config/compiler/pgo/pgo.gni")
 import("//build/common/config/sanitizers/sanitizers.gni")
 import("//build/common/toolchain/goma.gni")
 import("//build/common/toolchain/toolchain.gni")
-import("//build/common_overrides/build.gni")
 
 declare_args() {
   # How many symbols to include in the build. This affects the performance of
@@ -62,6 +61,8 @@ declare_args() {
   # It's currently not possible to collect AFDO profiles on anything but
   # x86{,_64}.
   using_mismatched_sample_profile = current_cpu != "x64" && current_cpu != "x86"
+
+  ignore_elf32_limitations = false
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
