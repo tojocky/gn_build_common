@@ -9,7 +9,7 @@ analysis tool that Chromium uses to catch possible issues in Java code.
 
 Chromium runs lint on a per-target basis for all targets using any of the
 following templates if they are marked as Chromium code (i.e.,
-`chromium_code = true`):
+`extra_checks = true`):
 
  - `android_apk`
  - `android_library`

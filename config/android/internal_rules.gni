@@ -2087,13 +2087,13 @@ if (enable_java_templates) {
     forward_variables_from(invoker, [ "testonly" ])
 
     _build_config = invoker.build_config
-    _chromium_code = invoker.chromium_code
+    _extra_checks = invoker.extra_checks
     _requires_android = invoker.requires_android
 
     if (defined(invoker.enable_errorprone)) {
       _enable_errorprone = invoker.enable_errorprone
     } else {
-      _enable_errorprone = use_errorprone_java_compiler && _chromium_code
+      _enable_errorprone = use_errorprone_java_compiler && _extra_checks
     }
 
     _provider_configurations = []
@@ -2197,7 +2197,7 @@ if (enable_java_templates) {
       foreach(e, _manifest_entries) {
         args += [ "--manifest-entry=" + e ]
       }
-      if (_chromium_code) {
+      if (_extra_checks) {
         args += [ "--chromium-code=1" ]
       }
       if (_enable_errorprone) {
@@ -2352,27 +2352,27 @@ if (enable_java_templates) {
 
     # Don't enable coverage or lint unless the target has some non-generated
     # files.
-    if (defined(invoker.chromium_code)) {
-      _chromium_code = invoker.chromium_code
+    if (defined(invoker.extra_checks)) {
+      _extra_checks = invoker.extra_checks
     } else {
       # Default based on whether target is in third_party.
       set_sources_assignment_filter([ "*\bthird_party\b*" ])
       sources = [
         get_label_info(":$_main_target_name", "dir"),
       ]
-      _chromium_code = sources != []
-      if (!_chromium_code && !_is_prebuilt && _java_files != []) {
+      _extra_checks = sources != []
+      if (!_extra_checks && !_is_prebuilt && _java_files != []) {
         # Unless third_party code has an org.chromium file in it.
         set_sources_assignment_filter([ "*\bchromium\b*" ])
         sources = _java_files
-        _chromium_code = _java_files != sources
+        _extra_checks = _java_files != sources
       }
       set_sources_assignment_filter([])
       sources = []
     }
 
     if (defined(_final_jar_path)) {
-      _emma_instrument = emma_coverage && _chromium_code && _java_files != [] &&
+      _emma_instrument = emma_coverage && _extra_checks && _java_files != [] &&
                          (!defined(invoker.testonly) || !invoker.testonly)
       if (defined(invoker.emma_never_instrument)) {
         _emma_instrument = !invoker.emma_never_instrument && _emma_instrument
@@ -2477,7 +2477,7 @@ if (enable_java_templates) {
     }
 
     # TODO(agrieve): Enable lint for _has_sources rather than just _java_files.
-    _has_lint_target = _java_files != [] && _supports_android && _chromium_code
+    _has_lint_target = _java_files != [] && _supports_android && _extra_checks
     if (_has_sources) {
       _compile_java_target = "${_main_target_name}__compile_java"
       compile_java(_compile_java_target) {
@@ -2500,7 +2500,7 @@ if (enable_java_templates) {
           java_sources_file = _java_sources_file
         }
         srcjar_deps = _srcjar_deps
-        chromium_code = _chromium_code
+        extra_checks = _extra_checks
         requires_android = _requires_android
         deps = _accumulated_deps
         javac_jar_path = _javac_jar_path

@@ -500,7 +500,7 @@ default_compiler_configs = [
   "//build/common/config/compiler:clang_stackrealign",
   "//build/common/config/compiler:compiler_arm_fpu",
   "//build/common/config/compiler:compiler_arm_thumb",
-  "//build/common/config/compiler:chromium_code",
+  "//build/common/config/compiler:extra_checks",
   "//build/common/config/compiler:default_include_dirs",
   "//build/common/config/compiler:default_optimization",
   "//build/common/config/compiler:default_stack_frames",

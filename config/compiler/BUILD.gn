@@ -1012,7 +1012,7 @@ config("runtime_library") {
 # default_warnings ------------------------------------------------------------
 #
 # Collects all warning flags that are used by default.  This is used as a
-# subconfig of both chromium_code and no_chromium_code.  This way these
+# subconfig of both extra_checks and no_extra_checks.  This way these
 # flags are guaranteed to appear on the compile command line after -Wall.
 config("default_warnings") {
   cflags = []
@@ -1277,12 +1277,12 @@ config("default_warnings") {
   }
 }
 
-# chromium_code ---------------------------------------------------------------
+# extra_checks ---------------------------------------------------------------
 #
 # Toggles between higher and lower warnings for code that is (or isn't)
 # part of Chromium.
 
-config("chromium_code") {
+config("extra_checks") {
   if (is_win) {
     cflags = [ "/W4" ]  # Warning level 4.
   } else {
@@ -1296,7 +1296,7 @@ config("chromium_code") {
       ldflags = [ "-Werror" ]
     }
     if (is_clang) {
-      # Enable extra warnings for chromium_code when we control the compiler.
+      # Enable extra warnings for extra_checks when we control the compiler.
       cflags += [ "-Wextra" ]
     }
 
@@ -1345,7 +1345,7 @@ config("chromium_code") {
   configs = [ ":default_warnings" ]
 }
 
-config("no_chromium_code") {
+config("no_extra_checks") {
   cflags = []
   cflags_cc = []
   defines = []

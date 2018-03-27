@@ -270,9 +270,9 @@ def _CreateInfoFile(java_files, options, srcjar_files):
     source = srcjar_files.get(java_file, java_file)
     if source.endswith('_aidl.srcjar'):
       continue
-    assert not options.chromium_code or len(class_names) == 1, (
+    assert not options.extra_checks or len(class_names) == 1, (
         'Chromium java files must only have one class: {}'.format(source))
-    if options.chromium_code:
+    if options.extra_checks:
       _CheckPathMatchesClassName(java_file, package_name, class_names[0])
   _WriteInfoFile(options.jar_path + '.info', info_data, srcjar_files)
 
@@ -286,7 +286,7 @@ def _CreateInfoFile(java_files, options, srcjar_files):
 def _OnStaleMd5(changes, options, javac_cmd, java_files, classpath_inputs,
                 classpath):
   # Don't bother enabling incremental compilation for non-chromium code.
-  incremental = options.incremental and options.chromium_code
+  incremental = options.incremental and options.extra_checks
 
   with build_utils.TempDir() as temp_dir:
     srcjars = options.java_srcjars
@@ -383,7 +383,7 @@ def _OnStaleMd5(changes, options, javac_cmd, java_files, classpath_inputs,
 
       attempt_build = lambda: build_utils.CheckOutput(
           cmd,
-          print_stdout=options.chromium_code,
+          print_stdout=options.extra_checks,
           stdout_filter=stdout_filter,
           stderr_filter=ProcessJavacOutput)
       try:
@@ -473,7 +473,7 @@ def _ParseOptions(argv):
            'files are packaged into the jar. Files should be specified in '
            'format <filename>:<path to be placed in jar>.')
   parser.add_option(
-      '--chromium-code',
+      '--extra-checks',
       type='int',
       help='Whether code being compiled should be built with stricter '
       'warnings for chromium code.')
@@ -563,7 +563,7 @@ def main(argv):
       '-target', options.java_version,
     ])
 
-  if options.chromium_code:
+  if options.extra_checks:
     javac_cmd.extend(['-Xlint:unchecked', '-Werror'])
   else:
     # XDignore.symbol.file makes javac compile against rt.jar instead of

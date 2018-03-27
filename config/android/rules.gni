@@ -1229,7 +1229,7 @@ if (enable_java_templates) {
   #   classpath_deps: Deps that should added to the classpath for this target,
   #     but not linked into the apk (use this for annotation processors).
   #
-  #   chromium_code: If true, extra analysis warning/errors will be enabled.
+  #   extra_checks: If true, extra analysis warning/errors will be enabled.
   #   enable_errorprone: If true, enables the errorprone compiler.
   #   enable_incremental_javac_override: Overrides the global
   #     enable_incremental_javac.
@@ -2163,7 +2163,7 @@ if (enable_java_templates) {
                                "android_manifest",
                                "android_manifest_dep",
                                "apk_under_test",
-                               "chromium_code",
+                               "extra_checks",
                                "classpath_deps",
                                "emma_never_instrument",
                                "java_files",
@@ -3019,7 +3019,7 @@ if (enable_java_templates) {
     }
 
     android_library(target_name) {
-      chromium_code = false
+      extra_checks = false
       java_files = []
       srcjar_deps = [ ":${_template_name}__protoc_java" ]
       deps = [
