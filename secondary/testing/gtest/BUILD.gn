@@ -123,11 +123,9 @@ static_library("gtest") {
   all_dependent_configs = [ ":gtest_config" ]
   public_configs = [ ":gtest_direct_config" ]
 
-  configs -= [ "//build/common/config/compiler:chromium_code" ]
+  configs -= [ "//build/common/config/compiler:extra_checks" ]
   configs += [
-    "//build/common/config/compiler:no_chromium_code",
-
-    # Must be after no_chromium_code for warning flags to be ordered correctly.
+    # Must be after no_extra_checks for warning flags to be ordered correctly.
     ":gtest_warnings",
   ]
 }
